@@ -7,9 +7,15 @@ import { AddAnswerForm, EditAnswerForm } from "./Forms";
 function Answers(props) {
   const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
   const [showEditAnswerForm, setShowEditAnswerForm] = useState(false);
-  const [answerToEdit, setAnswerToEdit] = useState({});
   const [successMsg, setSuccessMsg] = useState("");
   const [timeOutID, setTimeOutID] = useState(null);
+  const [obj, setObj] = useState({
+    id: "",
+    date: "",
+    text: "",
+    author: "",
+    score: "",
+  });
 
   return (
     <>
@@ -25,7 +31,8 @@ function Answers(props) {
               className="text-center"
               variant="success"
               onClose={() => {
-                setSuccessMsg(""), clearTimeout(timeOutID);
+                setSuccessMsg("");
+                clearTimeout(timeOutID);
               }}
               dismissible
             >
@@ -40,7 +47,7 @@ function Answers(props) {
             deleteAnswer={props.deleteAnswer}
             setShowAddAnswerForm={setShowAddAnswerForm}
             setShowEditAnswerForm={setShowEditAnswerForm}
-            setAnswerToEdit={setAnswerToEdit}
+            setObj={setObj}
           ></AnswersTable>
         </Col>
       </Row>
@@ -53,18 +60,22 @@ function Answers(props) {
             showEditAnswerForm={showEditAnswerForm}
             setShowAddAnswerForm={setShowAddAnswerForm}
             setShowEditAnswerForm={setShowEditAnswerForm}
+            successMsg={successMsg}
             setSuccessMsg={setSuccessMsg}
+            successMsgtimeOutID={timeOutID}
             setTimeOutID={setTimeOutID}
           />
-          {showEditAnswerForm && (
-            <EditAnswerForm
-              setAnswers={props.setAnswers}
-              answerToEdit={answerToEdit}
-              setShowEditAnswerForm={setShowEditAnswerForm}
-              setSuccessMsg={setSuccessMsg}
-              setTimeOutID={setTimeOutID}
-            />
-          )}
+          <EditAnswerForm
+            showEditAnswerForm={showEditAnswerForm}
+            setAnswers={props.setAnswers}
+            setShowEditAnswerForm={setShowEditAnswerForm}
+            successMsg={successMsg}
+            setSuccessMsg={setSuccessMsg}
+            successMsgtimeOutID={timeOutID}
+            setTimeOutID={setTimeOutID}
+            obj={obj}
+            setObj={setObj}
+          />
         </Col>
       </Row>
     </>
@@ -106,7 +117,7 @@ function AnswersTable(props) {
             deleteAnswer={props.deleteAnswer}
             setShowAddAnswerForm={props.setShowAddAnswerForm}
             setShowEditAnswerForm={props.setShowEditAnswerForm}
-            setAnswerToEdit={props.setAnswerToEdit}
+            setObj={props.setObj}
           />
         ))}
       </tbody>
@@ -124,7 +135,7 @@ function AnswerRow(props) {
         setShowAddAnswerForm={props.setShowAddAnswerForm}
         setShowEditAnswerForm={props.setShowEditAnswerForm}
         deleteAnswer={props.deleteAnswer}
-        setAnswerToEdit={props.setAnswerToEdit}
+        setObj={props.setObj}
       />
     </tr>
   );
@@ -142,20 +153,30 @@ function AnswerData(props) {
 }
 
 function AnswerActions(props) {
+  const handleEditClick = () => {
+    // Creo un nuovo oggetto con tutte le proprietà da aggiornare
+    const updatedObj = {
+      id: props.answer.id,
+      date: props.answer.date.format("YYYY-MM-DD"),
+      text: props.answer.text,
+      author: props.answer.email,
+      score: props.answer.score,
+    };
+
+    // Passo l'oggetto aggiornato a props.setObj
+    props.setObj(updatedObj);
+
+    // Metto a false il form di aggiunta risposta così se era aperto si chiude e metto a true il form di modifica risposta per renderlo visibile
+    props.setShowAddAnswerForm(false);
+    props.setShowEditAnswerForm(true);
+  };
+
   return (
     <td>
       <Button variant="warning" onClick={() => props.addScore(props.answer.id)}>
         <i className="bi bi-arrow-up"></i>
       </Button>
-      <Button
-        variant="primary"
-        className="mx-1"
-        onClick={() => {
-          props.setShowAddAnswerForm(false),
-            props.setShowEditAnswerForm(true),
-            props.setAnswerToEdit(props.answer);
-        }}
-      >
+      <Button variant="primary" className="mx-1" onClick={handleEditClick}>
         <i className="bi bi-pencil-square"></i>
       </Button>
       <Button
