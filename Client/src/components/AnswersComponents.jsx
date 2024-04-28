@@ -17,6 +17,7 @@ function Answers(props) {
     score: "",
   });
 
+
   return (
     <>
       <Row>

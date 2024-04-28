@@ -6,6 +6,7 @@ import NavHeader from "./components/NavHeader";
 import QuestionDescription from "./components/QuestionDescription";
 import Answers from "./components/AnswersComponents";
 import MyFooter from "./components/MyFooter";
+import LoadingBar from "./components/LoadingBar";
 
 const fakeQuestion = new Question(
   1,
@@ -49,6 +50,7 @@ function App() {
   return (
     <>
       <NavHeader questionNum={fakeQuestion.id} />
+      <LoadingBar />
       <Container fluid className="mt-3">
         <QuestionDescription question={fakeQuestion} />
         <Answers
