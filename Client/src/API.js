@@ -55,5 +55,16 @@ async function voteAnswer(id) {
   }
 }
 
-const API = { getQuestionById, getAnswersByQuestionId, voteAnswer };
+async function deleteAnswer(id) {
+  // call  /api/answers/:id
+  const response = await fetch(URL + `/answers/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    const errore = await response.json();
+    throw errore.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
+  }
+}
+
+const API = { getQuestionById, getAnswersByQuestionId, voteAnswer, deleteAnswer };
 export default API;

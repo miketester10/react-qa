@@ -16,7 +16,7 @@ function App() {
   const [scoreState, setScoreState] = useState("desc");
 
   const handleError = (error) => {
-      console.log(`**Errore catturato: ${error}**`);
+    console.log(`**Errore catturato: ${error}**`);
   };
 
   const question_id = 1;
@@ -57,7 +57,18 @@ function App() {
   };
 
   const deleteAnswer = (id) => {
-    setAnswers((oldAnswers) => oldAnswers.filter((answer) => answer.id !== id));
+    setAnswers((oldAnswers) =>
+      oldAnswers.map((answer) => {
+        if (answer.id === id) {
+          return { ...answer, status: "deleted" };
+        } else {
+          return answer;
+        }
+      })
+    );
+    API.deleteAnswer(id)
+      .then(() => setDirty(true))
+      .catch((error) => handleError(error));
   };
 
   const sortAnswers = (state) => {

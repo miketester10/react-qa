@@ -5,11 +5,12 @@ const db = new sqlite.Database("./db/react-qa.db", (err) => {
   if (err) throw err;
 });
 
-function getQuestion(id) {
+// get the question identified by {id}
+exports.getQuestion = (question_id) => {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM questions WHERE id = ?";
 
-    db.get(sql, [id], (err, row) => {
+    db.get(sql, [question_id], (err, row) => {
       if (err) {
         reject(err);
         return;
@@ -30,7 +31,8 @@ function getQuestion(id) {
   });
 }
 
-function listAnswersByQuestion(question_id) {
+// get all answers to a given question
+exports.listAnswersByQuestion = (question_id) => {
   return new Promise((resolve, reject) => {
     const sql = `SELECT * FROM answers WHERE question_id = ? 
                 ORDER BY score DESC, date DESC`;
@@ -54,11 +56,12 @@ function listAnswersByQuestion(question_id) {
   });
 }
 
-function voteAnswer(id, vote) {
+// vote an existing answer
+exports.voteAnswer = (answer_id, vote) => {
   return new Promise((resolve, reject) => {
     const sql = "UPDATE answers SET score = score + ? WHERE id = ?";
     const delta = vote === "up" ? 1 : -1;
-    db.run(sql, [delta, id], (err) => {
+    db.run(sql, [delta, answer_id], (err) => {
       if (err) {
         reject(err);
         return;
@@ -68,6 +71,16 @@ function voteAnswer(id, vote) {
   });
 }
 
-exports.listAnswersByQuestion = listAnswersByQuestion;
-exports.getQuestion = getQuestion;
-exports.voteAnswer = voteAnswer;
+// delete an existing answer
+exports.deleteAnswer = (answer_id) => {
+  return new Promise((resolve, reject) => {
+    const sql = "DELETE FROM answers WHERE id = ?";
+    db.run(sql, [answer_id], (err) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(true);
+    });
+  });
+}

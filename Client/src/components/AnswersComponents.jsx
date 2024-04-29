@@ -17,6 +17,20 @@ function Answers(props) {
     score: "",
   });
 
+  let variant = null;
+  switch (successMsg.variant) {
+    case "added":
+      variant = "success";
+      break;
+    case "deleted":
+      variant = "danger";
+      break;
+    case "updated":
+      variant = "warning";
+      break;
+    default:
+      break;
+  }
   return (
     <>
       <Row>
@@ -29,14 +43,14 @@ function Answers(props) {
           {successMsg ? (
             <Alert
               className="text-center"
-              variant="success"
+              variant={variant}
               onClose={() => {
                 setSuccessMsg("");
                 clearTimeout(timeOutID);
               }}
               dismissible
             >
-              {successMsg}
+              {successMsg.message}
             </Alert>
           ) : null}
           <AnswersTable

@@ -59,7 +59,10 @@ function AddAnswerForm(props) {
       props.setSuccessMsg(""); // Svuoto il banner
       clearTimeout(props.successMsgtimeOutID); // Elimino il timeout
     }
-    props.setSuccessMsg("Domanda aggiunta correttamente.");
+    props.setSuccessMsg({
+      message: "Inserimento risposta in corso...",
+      variant: "added",
+    });
     const idTimeOutSuccessMsg = setTimeout(() => props.setSuccessMsg(""), 3000);
     props.setTimeOutID(idTimeOutSuccessMsg);
   };
@@ -188,7 +191,10 @@ function EditAnswerForm(props) {
       props.setSuccessMsg(""); // Svuoto il banner
       clearTimeout(props.successMsgtimeOutID); // Elimino il timeout
     }
-    props.setSuccessMsg("Domanda modificata correttamente.");
+    props.setSuccessMsg({
+      message: "Aggiornamento risposta in corso...",
+      variant: "updated",
+    });
     const idTimeOutSuccessMsg = setTimeout(() => props.setSuccessMsg(""), 3000);
     props.setTimeOutID(idTimeOutSuccessMsg);
   };
