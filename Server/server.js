@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { check, validationResult } = require("express-validator"); // validation middleware
 const dao = require("./db/dao");
+const { FORMAT } = require("sqlite3");
 
 /*** Inizializzo Express ***/
 const app = express();
@@ -44,6 +45,31 @@ app.get("/api/questions/:id/answers/", async (req, res) => {
   }
 });
 
+// API per aggiungere una risposta ad una domanda
+app.post(
+  "/api/answers",
+  [
+    check("date").isDate({ format: "YYYY-MM-DD", strictMode: true }),
+    check("text").isLength({ min: 2 }),
+    check("respondent").isLength({ min: 2 }),
+    check("score").isInt(),
+  ],
+  async (req, res) => {
+    let error = validationResult(req);
+    if (!error.isEmpty()) {
+      error = { message: JSON.stringify(error.array()) };
+      return res.status(422).json({ error: error.message });
+    }
+    try {
+      const answer = req.body;
+      const result = await dao.createAnswer(answer);
+      setTimeout(() => res.json({ success: result }), 1000); // il setTimeout l'ho messo solo per simulare il tempo di risposta (va tolto in produzione)
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
+
 // API per aggiungere score ad una risposta
 app.post("/api/answers/:id/vote", [check("id").isInt()], async (req, res) => {
   let error = validationResult(req);
@@ -70,8 +96,7 @@ app.delete("/api/answers/:id", async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-  
-})
+});
 
 /*** Avvio del server ***/
 app.listen(PORT, () => {

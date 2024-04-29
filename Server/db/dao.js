@@ -29,7 +29,7 @@ exports.getQuestion = (question_id) => {
       }
     });
   });
-}
+};
 
 // get all answers to a given question
 exports.listAnswersByQuestion = (question_id) => {
@@ -54,7 +54,32 @@ exports.listAnswersByQuestion = (question_id) => {
       resolve(answers);
     });
   });
-}
+};
+
+// add a new answer
+exports.createAnswer = (answer) => {
+  return new Promise((resolve, reject) => {
+    const sql =
+      "INSERT INTO answers (text, respondent, date, score, question_id) VALUES (?, ?, ?, ?, ?)";
+    db.run(
+      sql,
+      [
+        answer.text,
+        answer.respondent,
+        answer.date,
+        answer.score,
+        answer.question_id,
+      ],
+      (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(true);
+      }
+    );
+  });
+};
 
 // vote an existing answer
 exports.voteAnswer = (answer_id, vote) => {
@@ -69,7 +94,7 @@ exports.voteAnswer = (answer_id, vote) => {
       resolve(true);
     });
   });
-}
+};
 
 // delete an existing answer
 exports.deleteAnswer = (answer_id) => {
@@ -83,4 +108,4 @@ exports.deleteAnswer = (answer_id) => {
       resolve(true);
     });
   });
-}
+};

@@ -68,8 +68,7 @@ function Answers(props) {
       <Row>
         <Col lg={10} className="mx-auto">
           <AddAnswerForm
-            answers={props.answers}
-            setAnswers={props.setAnswers}
+            addAnswer={props.addAnswer}
             showAddAnswerForm={showAddAnswerForm}
             showEditAnswerForm={showEditAnswerForm}
             setShowAddAnswerForm={setShowAddAnswerForm}

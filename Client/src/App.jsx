@@ -41,6 +41,21 @@ function App() {
     }
   }, [dirty]);
 
+  const addAnswer = (newAnswer) => {
+    newAnswer.question_id = question_id;
+    newAnswer.status = "added";
+    setAnswers((oldAnswers) => {
+      console.log(oldAnswers);
+      const temporary_key = Math.max(...oldAnswers.map((elemento) => elemento.id)) + 1; // Create a new temporary id for the key in map function in <Answers Row/>, waiting for a truly unique id that can only be supplied by the server. This temporary id will be replaced when the server will provide its id.
+      newAnswer.id = temporary_key;
+      return [...oldAnswers, newAnswer];
+    });
+    console.log(newAnswer);
+    API.addAnswer(newAnswer)
+      .then(() => setDirty(true))
+      .catch((error) => handleError(error));
+  };
+
   const addScore = (id) => {
     setAnswers((oldAnswers) =>
       oldAnswers.map((answer) => {
@@ -92,7 +107,8 @@ function App() {
             <QuestionDescription question={question} />
             <Answers
               answers={answers}
-              setAnswers={setAnswers}
+              addAnswer={addAnswer}
+              // setAnswers={setAnswers}
               scoreState={scoreState}
               sortAnswers={sortAnswers}
               addScore={addScore}

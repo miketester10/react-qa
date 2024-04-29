@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import { Form, Button, Alert } from "react-bootstrap";
 import { useState } from "react";
-import { Answer } from "../QAModels.mjs";
+import dayjs from 'dayjs';
 
 function AddAnswerForm(props) {
   const [date, setDate] = useState("");
@@ -40,14 +40,13 @@ function AddAnswerForm(props) {
       setTimeOutID(idTimeoutErrorMsg);
       return;
     }
-    const newAnswer = new Answer(
-      props.answers.length + 1,
-      text,
-      author,
-      date,
-      score
-    );
-    props.setAnswers((oldAnswers) => [...oldAnswers, newAnswer]);
+    const newAnswer = {
+      text: text,
+      respondent: author,
+      date: dayjs(date),
+      score: parseInt(score),
+    };
+    props.addAnswer(newAnswer);
     setDate("");
     setText("");
     setAuthor("");

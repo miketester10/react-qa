@@ -66,5 +66,21 @@ async function deleteAnswer(id) {
   }
 }
 
-const API = { getQuestionById, getAnswersByQuestionId, voteAnswer, deleteAnswer };
+async function addAnswer(answer) {
+  // call  /api/answers
+  const response = await fetch(URL + `/answers`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({...answer, date: answer.date.format("YYYY-MM-DD")}),
+  });
+  if (!response.ok) {
+    const errore = await response.json();
+    throw errore.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
+  }
+  
+}
+
+const API = { getQuestionById, getAnswersByQuestionId, addAnswer, voteAnswer, deleteAnswer };
 export default API;
