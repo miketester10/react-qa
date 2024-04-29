@@ -1,9 +1,9 @@
 import dayjs from 'dayjs';
 
-function Answer(id, text, email, date, score=0) {
+function Answer(id, text, respondent, date, score=0) {
   this.id = id;
   this.text = text;
-  this.email = email;
+  this.respondent = respondent;
   this.score = parseInt(score);
   this.date = dayjs(date);
 }

@@ -17,7 +17,6 @@ function Answers(props) {
     score: "",
   });
 
-
   return (
     <>
       <Row>
@@ -127,8 +126,23 @@ function AnswersTable(props) {
 }
 
 function AnswerRow(props) {
+  let statusClass = null;
+
+  switch (props.answer.status) {
+    case "added":
+      statusClass = "table-success";
+      break;
+    case "deleted":
+      statusClass = "table-danger";
+      break;
+    case "updated":
+      statusClass = "table-warning";
+      break;
+    default:
+      break;
+  }
   return (
-    <tr>
+    <tr className={statusClass}>
       <AnswerData answer={props.answer} />
       <AnswerActions
         answer={props.answer}
@@ -147,7 +161,7 @@ function AnswerData(props) {
     <>
       <td>{props.answer.date.format("YYYY-MM-DD")}</td>
       <td>{props.answer.text}</td>
-      <td>{props.answer.email}</td>
+      <td>{props.answer.respondent}</td>
       <td>{props.answer.score}</td>
     </>
   );
@@ -160,7 +174,7 @@ function AnswerActions(props) {
       id: props.answer.id,
       date: props.answer.date.format("YYYY-MM-DD"),
       text: props.answer.text,
-      author: props.answer.email,
+      author: props.answer.respondent,
       score: props.answer.score,
     };
 
