@@ -17,9 +17,14 @@ function App() {
   const [dirty, setDirty] = useState(true);
   const [successMsg, setSuccessMsg] = useState("");
   const [successMsgTimeOutID, setSuccessMsgTimeOutID] = useState(null);
+  const [errorMsg, setErrorMsg] = useState("");
 
   const handleError = (error) => {
     console.log(`**Errore catturato: ${error}**`);
+    const errore = "Si è verificato un errore. Riprova tra pochi secondi...";
+    setErrorMsg({message: errore, variant: "deleted"});
+    setTimeout(() => setErrorMsg(""), 4000);
+    setDirty(true);
   };
 
   const question_id = 1;
@@ -175,6 +180,8 @@ function App() {
               successMsg={successMsg}
               successMsgTimeOutID={successMsgTimeOutID}
               setSuccessMsg={setSuccessMsg}
+              errorMsg={errorMsg}
+              setErrorMsg={setErrorMsg}
             />
           </Container>
           <MyFooter />

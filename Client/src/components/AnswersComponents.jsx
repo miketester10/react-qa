@@ -10,7 +10,7 @@ function Answers(props) {
   const [obj, setObj] = useState("");
 
   let variant = null;
-  switch (props.successMsg.variant) {
+  switch (props.successMsg.variant || props.errorMsg.variant) {
     case "added":
       variant = "success";
       break;
@@ -32,17 +32,18 @@ function Answers(props) {
       </Row>
       <Row>
         <Col lg={10} className="mx-auto">
-          {props.successMsg.state ? (
+          {props.successMsg.state || props.errorMsg ? (
             <Alert
               className="text-center"
               variant={variant}
               onClose={() => {
                 props.setSuccessMsg("");
                 clearTimeout(props.successMsgTimeOutID);
+                props.setErrorMsg("");
               }}
               dismissible
             >
-              {props.successMsg.message}
+              {props.successMsg.message || props.errorMsg.message} 
             </Alert>
           ) : null}
           <AnswersTable

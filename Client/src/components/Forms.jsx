@@ -141,7 +141,7 @@ function EditAnswerForm(props) {
     setText(props.obj.text);
     setAuthor(props.obj.author);
     setScore(props.obj.score);
-  }, [props.obj.id]);
+  }, [props.obj]);
 
   const handleDate = (event) => {
     const value = event.target.value;
