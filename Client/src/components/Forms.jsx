@@ -12,10 +12,11 @@ function AddAnswerForm(props) {
   const [errorMsg, setErrorMsg] = useState("");
   const [timeOutID, setTimeOutID] = useState(null);
 
-  const handleDate = (event) => {
-    const value = event.target.value;
-    setDate(value);
-  };
+  /*** solo se voglio permettere all'utente di selezionare la data ***/
+  // const handleDate = (event) => {        
+  //   const value = event.target.value;
+  //   setDate(value);
+  // };
 
   const handleText = (event) => {
     const value = event.target.value;
@@ -54,6 +55,10 @@ function AddAnswerForm(props) {
     };
     props.addAnswer(newAnswer);
     props.setShowAddAnswerForm(false);
+    clearForm();
+  };
+
+  const clearForm = () => {
     setDate("");
     setText("");
     setAuthor("");
@@ -80,7 +85,8 @@ function AddAnswerForm(props) {
         <Form onSubmit={handleSubmitAddAnswer}>
           <Form.Group className="mb-3">
             <Form.Label>Date</Form.Label>
-            <Form.Control type="date" value={date} onChange={handleDate} />
+            {/* <Form.Control type="date" value={date} onChange={handleDate} /> // solo se voglio permettere all'utente di selezionare la data */}
+            <Form.Control type="date" value={date} disabled />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Text</Form.Label>
@@ -105,6 +111,7 @@ function AddAnswerForm(props) {
               props.setShowAddAnswerForm(false);
               setErrorMsg("");
               clearTimeout(timeOutID);
+              clearForm();
             }}
           >
             Close
@@ -117,6 +124,7 @@ function AddAnswerForm(props) {
             onClick={() => {
               props.setShowAddAnswerForm(true);
               props.setShowEditAnswerForm(false);
+              setDate(dayjs().format("YYYY-MM-DD")); // setto la data al giorno corrente con dayjs()
             }}
           >
             Add Answer
@@ -207,7 +215,12 @@ function EditAnswerForm(props) {
         <Form onSubmit={handleSubmitEditAnswer}>
           <Form.Group className="mb-3">
             <Form.Label>Date</Form.Label>
-            <Form.Control type="date" value={date} onChange={handleDate} />
+            <Form.Control
+              type="date"
+              value={date}
+              onChange={handleDate}
+              disabled
+            />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Text</Form.Label>

@@ -13,7 +13,7 @@ const PORT = 8080;
 app.use(cors()); // Abilita CORS per tutte le API
 app.use(express.json());
 
-/*** Set-up Router */
+/*** Set-up Router ***/
 app.use(questionsRouter);
 app.use(answersRouter);
 
