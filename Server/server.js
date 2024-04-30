@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const { check, validationResult } = require("express-validator"); // validation middleware
 const dao = require("./db/dao");
-const { FORMAT } = require("sqlite3");
 
 /*** Inizializzo Express ***/
 const app = express();

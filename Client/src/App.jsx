@@ -21,8 +21,8 @@ function App() {
 
   const handleError = (error) => {
     console.log(`**Errore catturato: ${error}**`);
-    const errore = "Si è verificato un errore. Riprova tra pochi secondi...";
-    setErrorMsg({message: errore, variant: "deleted"});
+    const errore = "Si è verificato un errore. Riprova...";
+    setErrorMsg({ message: errore, variant: "deleted" });
     setTimeout(() => setErrorMsg(""), 4000);
     setDirty(true);
   };

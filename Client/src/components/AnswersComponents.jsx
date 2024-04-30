@@ -43,7 +43,7 @@ function Answers(props) {
               }}
               dismissible
             >
-              {props.successMsg.message || props.errorMsg.message} 
+              {props.successMsg.message || props.errorMsg.message}
             </Alert>
           ) : null}
           <AnswersTable
