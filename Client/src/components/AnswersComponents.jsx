@@ -26,8 +26,8 @@ function Answers(props) {
   return (
     <>
       <Row>
-        <Col as="h2" className="mt-2">
-          Answers:
+        <Col as="h4" className="mt-3">
+          Answers {`(${props.answers.length})`}: 
         </Col>
       </Row>
       <Row>
