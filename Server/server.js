@@ -70,6 +70,31 @@ app.post(
   }
 );
 
+// API per modificare una risposta
+app.put(
+  "/api/answers/:id",
+  [
+    check("date").isDate({ format: "YYYY-MM-DD", strictMode: true }),
+    check("text").isLength({ min: 2 }),
+    check("respondent").isLength({ min: 2 }),
+    check("score").isInt(),
+  ],
+  async (req, res) => {
+    let error = validationResult(req);
+    if (!error.isEmpty()) {
+      error = { message: JSON.stringify(error.array()) };
+      return res.status(422).json({ error: error.message });
+    }
+    try {
+      const answer = req.body;
+      const result = await dao.editAnswer(answer);
+      setTimeout(() => res.json({ success: result }), 1000); // il setTimeout l'ho messo solo per simulare il tempo di risposta (va tolto in produzione)
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
+
 // API per aggiungere score ad una risposta
 app.post("/api/answers/:id/vote", [check("id").isInt()], async (req, res) => {
   let error = validationResult(req);

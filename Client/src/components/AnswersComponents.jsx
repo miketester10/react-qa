@@ -7,18 +7,10 @@ import { AddAnswerForm, EditAnswerForm } from "./Forms";
 function Answers(props) {
   const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
   const [showEditAnswerForm, setShowEditAnswerForm] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
-  const [timeOutID, setTimeOutID] = useState(null);
-  const [obj, setObj] = useState({
-    id: "",
-    date: "",
-    text: "",
-    author: "",
-    score: "",
-  });
+  const [obj, setObj] = useState("");
 
   let variant = null;
-  switch (successMsg.variant) {
+  switch (props.successMsg.variant) {
     case "added":
       variant = "success";
       break;
@@ -40,17 +32,17 @@ function Answers(props) {
       </Row>
       <Row>
         <Col lg={10} className="mx-auto">
-          {successMsg ? (
+          {props.successMsg.state ? (
             <Alert
               className="text-center"
               variant={variant}
               onClose={() => {
-                setSuccessMsg("");
-                clearTimeout(timeOutID);
+                props.setSuccessMsg("");
+                clearTimeout(props.successMsgTimeOutID);
               }}
               dismissible
             >
-              {successMsg.message}
+              {props.successMsg.message}
             </Alert>
           ) : null}
           <AnswersTable
@@ -73,19 +65,11 @@ function Answers(props) {
             showEditAnswerForm={showEditAnswerForm}
             setShowAddAnswerForm={setShowAddAnswerForm}
             setShowEditAnswerForm={setShowEditAnswerForm}
-            successMsg={successMsg}
-            setSuccessMsg={setSuccessMsg}
-            successMsgtimeOutID={timeOutID}
-            setTimeOutID={setTimeOutID}
           />
           <EditAnswerForm
+            editAnswer={props.editAnswer}
             showEditAnswerForm={showEditAnswerForm}
-            setAnswers={props.setAnswers}
             setShowEditAnswerForm={setShowEditAnswerForm}
-            successMsg={successMsg}
-            setSuccessMsg={setSuccessMsg}
-            successMsgtimeOutID={timeOutID}
-            setTimeOutID={setTimeOutID}
             obj={obj}
             setObj={setObj}
           />
@@ -183,7 +167,7 @@ function AnswerData(props) {
 function AnswerActions(props) {
   const handleEditClick = () => {
     // Creo un nuovo oggetto con tutte le proprietà da aggiornare
-    const updatedObj = {
+    const objToEdit = {
       id: props.answer.id,
       date: props.answer.date.format("YYYY-MM-DD"),
       text: props.answer.text,
@@ -191,8 +175,8 @@ function AnswerActions(props) {
       score: props.answer.score,
     };
 
-    // Passo l'oggetto aggiornato a props.setObj
-    props.setObj(updatedObj);
+    // Metto l'oggetto da modificare (objToEdit) in obj cosi da poterlo passare al form di modifica.
+    props.setObj(() => objToEdit);
 
     // Metto a false il form di aggiunta risposta così se era aperto si chiude e metto a true il form di modifica risposta per renderlo visibile
     props.setShowAddAnswerForm(false);

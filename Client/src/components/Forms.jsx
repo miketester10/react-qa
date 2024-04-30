@@ -1,7 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 import { Form, Button, Alert } from "react-bootstrap";
-import { useState } from "react";
-import dayjs from 'dayjs';
+import { useEffect, useState } from "react";
+import dayjs from "dayjs";
 
 function AddAnswerForm(props) {
   const [date, setDate] = useState("");
@@ -33,6 +34,11 @@ function AddAnswerForm(props) {
 
   const handleSubmitAddAnswer = (event) => {
     event.preventDefault();
+    if (errorMsg) {
+      setErrorMsg("");
+      clearTimeout(timeOutID);
+    }
+
     // Form validation
     if (!text || !author || !date || score === "") {
       setErrorMsg("Tutti i campi devono essere compilati.");
@@ -47,23 +53,11 @@ function AddAnswerForm(props) {
       score: parseInt(score),
     };
     props.addAnswer(newAnswer);
+    props.setShowAddAnswerForm(false);
     setDate("");
     setText("");
     setAuthor("");
     setScore("");
-    props.setShowAddAnswerForm(false);
-
-    if (props.successMsg) {
-      // Se già è attivo un banner verde success allora svuoto il banner ed elimino il suo timeout. Poi ne avvio un altro con le istruzioni successive.
-      props.setSuccessMsg(""); // Svuoto il banner
-      clearTimeout(props.successMsgtimeOutID); // Elimino il timeout
-    }
-    props.setSuccessMsg({
-      message: "Inserimento risposta in corso...",
-      variant: "added",
-    });
-    const idTimeOutSuccessMsg = setTimeout(() => props.setSuccessMsg(""), 3000);
-    props.setTimeOutID(idTimeOutSuccessMsg);
   };
 
   return (
@@ -134,68 +128,63 @@ function AddAnswerForm(props) {
 }
 
 function EditAnswerForm(props) {
+  const [date, setDate] = useState(props.obj.date);
+  const [text, setText] = useState(props.obj.text);
+  const [author, setAuthor] = useState(props.obj.author);
+  const [score, setScore] = useState(props.obj.score);
   const [errorMsg, setErrorMsg] = useState("");
   const [timeOutID, setTimeOutID] = useState(null);
 
+  useEffect(() => {
+    // siccome il componente <EditAnswerForm /> viene renderizzato prima che la props.obj sia stata definita (perchè viene definita con dei valoridopo che premo il pulsate di modifica della risposta), utilizzo useEffect per settare i valori ogni volta che la props.obj cambia, altrimenti quando apro il form di modifica i campi sono vuoti.
+    setDate(props.obj.date);
+    setText(props.obj.text);
+    setAuthor(props.obj.author);
+    setScore(props.obj.score);
+  }, [props.obj.id]);
+
   const handleDate = (event) => {
     const value = event.target.value;
-    props.setObj((oldObj) => ({ ...oldObj, date: value }));
+    setDate(value);
   };
 
   const handleText = (event) => {
     const value = event.target.value;
-    props.setObj((oldObj) => ({ ...oldObj, text: value }));
+    setText(value);
   };
 
   const handleAuthor = (event) => {
     const value = event.target.value;
-    props.setObj((oldObj) => ({ ...oldObj, author: value }));
+    setAuthor(value);
   };
 
   const handleScore = (event) => {
     const value = event.target.value;
-    props.setObj((oldObj) => ({ ...oldObj, score: value }));
+    setScore(value);
   };
 
   const handleSubmitEditAnswer = (event) => {
     event.preventDefault();
+    if (errorMsg) {
+      setErrorMsg("");
+      clearTimeout(timeOutID);
+    }
     // Form validation
-    if (
-      !props.obj.text ||
-      !props.obj.author ||
-      !props.obj.date ||
-      props.obj.score === ""
-    ) {
+    if (!date || !author || !date || score === "") {
       setErrorMsg("Tutti i campi devono essere compilati.");
       const idTimeOutErrorMsg = setTimeout(() => setErrorMsg(""), 3000);
       setTimeOutID(idTimeOutErrorMsg);
       return;
     }
-    const editedAnswer = new Answer(
-      props.obj.id,
-      props.obj.text,
-      props.obj.author,
-      props.obj.date,
-      props.obj.score
-    );
-    props.setAnswers((oldAnswers) =>
-      oldAnswers.map((answer) =>
-        answer.id === editedAnswer.id ? editedAnswer : answer
-      )
-    );
+    const editedAnswer = {
+      id: props.obj.id,
+      text: text,
+      respondent: author,
+      date: dayjs(date),
+      score: parseInt(score),
+    };
+    props.editAnswer(editedAnswer);
     props.setShowEditAnswerForm(false);
-
-    if (props.successMsg) {
-      // Se già è attivo un banner verde success allora svuoto il banner ed elimino il suo timeout. Poi ne avvio un altro con le istruzioni successive.
-      props.setSuccessMsg(""); // Svuoto il banner
-      clearTimeout(props.successMsgtimeOutID); // Elimino il timeout
-    }
-    props.setSuccessMsg({
-      message: "Aggiornamento risposta in corso...",
-      variant: "updated",
-    });
-    const idTimeOutSuccessMsg = setTimeout(() => props.setSuccessMsg(""), 3000);
-    props.setTimeOutID(idTimeOutSuccessMsg);
   };
 
   return (
@@ -218,35 +207,19 @@ function EditAnswerForm(props) {
         <Form onSubmit={handleSubmitEditAnswer}>
           <Form.Group className="mb-3">
             <Form.Label>Date</Form.Label>
-            <Form.Control
-              type="date"
-              value={props.obj.date}
-              onChange={handleDate}
-            />
+            <Form.Control type="date" value={date} onChange={handleDate} />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Text</Form.Label>
-            <Form.Control
-              as="textarea"
-              value={props.obj.text}
-              onChange={handleText}
-            />
+            <Form.Control as="textarea" value={text} onChange={handleText} />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Author</Form.Label>
-            <Form.Control
-              type="text"
-              value={props.obj.author}
-              onChange={handleAuthor}
-            />
+            <Form.Control type="text" value={author} onChange={handleAuthor} />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Score</Form.Label>
-            <Form.Control
-              type="number"
-              value={props.obj.score}
-              onChange={handleScore}
-            />
+            <Form.Control type="number" value={score} onChange={handleScore} />
           </Form.Group>
 
           <Button variant="primary" type="submit">

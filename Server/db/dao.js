@@ -81,6 +81,25 @@ exports.createAnswer = (answer) => {
   });
 };
 
+// edit an existing answer
+exports.editAnswer = (answer) => {
+  return new Promise((resolve, reject) => {
+    const sql =
+      "UPDATE answers SET text = ?, respondent = ?, date = ?, score = ? WHERE id = ?";
+    db.run(
+      sql,
+      [answer.text, answer.respondent, answer.date, answer.score, answer.id],
+      (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(true);
+      }
+    );
+  });
+};
+
 // vote an existing answer
 exports.voteAnswer = (answer_id, vote) => {
   return new Promise((resolve, reject) => {

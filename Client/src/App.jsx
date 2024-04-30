@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container } from "react-bootstrap";
 import { useEffect, useState } from "react";
@@ -11,9 +12,11 @@ import API from "./API";
 function App() {
   const [question, setQuestion] = useState([]);
   const [answers, setAnswers] = useState([]);
+  const [scoreState, setScoreState] = useState("desc");
   const [loading, setLoading] = useState(true);
   const [dirty, setDirty] = useState(true);
-  const [scoreState, setScoreState] = useState("desc");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [successMsgTimeOutID, setSuccessMsgTimeOutID] = useState(null);
 
   const handleError = (error) => {
     console.log(`**Errore catturato: ${error}**`);
@@ -36,6 +39,11 @@ function App() {
           setAnswers(answers);
           setLoading(false);
           setDirty(false);
+          if (successMsg) {
+            setSuccessMsg((oldObj) => ({ ...oldObj, state: true }));
+            const id = setTimeout(() => setSuccessMsg(""), 4000);
+            setSuccessMsgTimeOutID(id);
+          }
         })
         .catch((error) => handleError(error));
     }
@@ -45,14 +53,53 @@ function App() {
     newAnswer.question_id = question_id;
     newAnswer.status = "added";
     setAnswers((oldAnswers) => {
-      console.log(oldAnswers);
-      const temporary_key = Math.max(...oldAnswers.map((elemento) => elemento.id)) + 1; // Create a new temporary id for the key in map function in <Answers Row/>, waiting for a truly unique id that can only be supplied by the server. This temporary id will be replaced when the server will provide its id.
+      const temporary_key =
+        Math.max(...oldAnswers.map((elemento) => elemento.id)) + 1; // Create a new temporary id for the key in map function in <Answers Row/>, waiting for a truly unique id that can only be supplied by the server. This temporary id will be replaced when the server will provide its id.
       newAnswer.id = temporary_key;
       return [...oldAnswers, newAnswer];
     });
-    console.log(newAnswer);
+    if (successMsg) {
+      // Se è attivo un banner SuccessMsg allora svuoto il banner ed elimino il suo timeout. Poi ne avvio un altro con le istruzioni successive.
+      setSuccessMsg(""); // Svuoto il banner
+      clearTimeout(successMsgTimeOutID); // Elimino il timeout
+    }
     API.addAnswer(newAnswer)
-      .then(() => setDirty(true))
+      .then(() => {
+        setSuccessMsg({
+          message: "Risposta aggiunta correttamente!",
+          variant: "added",
+          state: false,
+        });
+        setDirty(true);
+      })
+      .catch((error) => handleError(error));
+  };
+
+  const editAnswer = (editedAnswer) => {
+    editedAnswer.status = "updated";
+    setAnswers((oldAnswers) =>
+      oldAnswers.map((answer) => {
+        if (answer.id === editedAnswer.id) {
+          return editedAnswer;
+        } else {
+          return answer;
+        }
+      })
+    );
+    if (successMsg) {
+      // Se è attivo un banner SuccessMsg allora svuoto il banner ed elimino il suo timeout. Poi ne avvio un altro con le istruzioni successive.
+      setSuccessMsg(""); // Svuoto il banner
+      clearTimeout(successMsgTimeOutID); // Elimino il timeout
+    }
+    API.editAnswer(editedAnswer)
+      .then(() => {
+        setSuccessMsg({
+          message: "Risposta aggiornata correttamente!",
+          variant: "updated",
+          state: false,
+        });
+        setDirty(true);
+      })
       .catch((error) => handleError(error));
   };
 
@@ -81,8 +128,20 @@ function App() {
         }
       })
     );
+    if (successMsg) {
+      // Se è attivo un banner SuccessMsg allora svuoto il banner ed elimino il suo timeout. Poi ne avvio un altro con le istruzioni successive.
+      setSuccessMsg(""); // Svuoto il banner
+      clearTimeout(successMsgTimeOutID); // Elimino il timeout
+    }
     API.deleteAnswer(id)
-      .then(() => setDirty(true))
+      .then(() => {
+        setSuccessMsg({
+          message: "Risposta eliminata correttamente!",
+          variant: "deleted",
+          state: false,
+        });
+        setDirty(true);
+      })
       .catch((error) => handleError(error));
   };
 
@@ -108,11 +167,14 @@ function App() {
             <Answers
               answers={answers}
               addAnswer={addAnswer}
-              // setAnswers={setAnswers}
+              editAnswer={editAnswer}
               scoreState={scoreState}
               sortAnswers={sortAnswers}
               addScore={addScore}
               deleteAnswer={deleteAnswer}
+              successMsg={successMsg}
+              successMsgTimeOutID={successMsgTimeOutID}
+              setSuccessMsg={setSuccessMsg}
             />
           </Container>
           <MyFooter />

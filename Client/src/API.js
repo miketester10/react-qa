@@ -40,6 +40,36 @@ async function getAnswersByQuestionId(id) {
   }
 }
 
+async function addAnswer(answer) {
+  // call  /api/answers
+  const response = await fetch(URL + `/answers`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ ...answer, date: answer.date.format("YYYY-MM-DD") }),
+  });
+  if (!response.ok) {
+    const errore = await response.json();
+    throw errore.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
+  }
+}
+
+async function editAnswer(answer) {
+  // call  /api/answers/:id
+  const response = await fetch(URL + `/answers/${answer.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ ...answer, date: answer.date.format("YYYY-MM-DD") }),
+  });
+  if (!response.ok) {
+    const errore = await response.json();
+    throw errore.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
+  }
+}
+
 async function voteAnswer(id) {
   // call  /api/answers/:id/vote
   const response = await fetch(URL + `/answers/${id}/vote`, {
@@ -66,21 +96,12 @@ async function deleteAnswer(id) {
   }
 }
 
-async function addAnswer(answer) {
-  // call  /api/answers
-  const response = await fetch(URL + `/answers`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({...answer, date: answer.date.format("YYYY-MM-DD")}),
-  });
-  if (!response.ok) {
-    const errore = await response.json();
-    throw errore.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
-  }
-  
-}
-
-const API = { getQuestionById, getAnswersByQuestionId, addAnswer, voteAnswer, deleteAnswer };
+const API = {
+  getQuestionById,
+  getAnswersByQuestionId,
+  addAnswer,
+  editAnswer,
+  voteAnswer,
+  deleteAnswer,
+};
 export default API;
