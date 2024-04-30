@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 // const { check, validationResult } = require("express-validator"); // validation middleware
 // const dao = require("./db/dao");
-/*** Set-up Router ***/
 const questionsRouter = require('./routes/questions');
 const answersRouter = require('./routes/answers');
 
@@ -14,7 +13,7 @@ const PORT = 8080;
 app.use(cors()); // Abilita CORS per tutte le API
 app.use(express.json());
 
-/*** Abilito le Routes */
+/*** Set-up Router */
 app.use(questionsRouter);
 app.use(answersRouter);
 
