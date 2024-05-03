@@ -34,6 +34,7 @@ async function getAnswersByQuestionId(id) {
       score: e.score,
       date: dayjs(e.date),
       question_id: e.question_id,
+      user_id: e.user_id,
     }));
   } else {
     throw answers.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore

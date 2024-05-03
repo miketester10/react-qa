@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 import { Form, Button, Alert } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import dayjs from "dayjs";
+import AuthContext from "./context/AuthContext";
 
 function AddAnswerForm(props) {
   const [date, setDate] = useState("");
@@ -12,8 +13,10 @@ function AddAnswerForm(props) {
   const [errorMsg, setErrorMsg] = useState("");
   const [timeOutID, setTimeOutID] = useState(null);
 
+  const { isLoggedIn } = useContext(AuthContext);
+
   /*** solo se voglio permettere all'utente di selezionare la data ***/
-  // const handleDate = (event) => {        
+  // const handleDate = (event) => {
   //   const value = event.target.value;
   //   setDate(value);
   // };
@@ -64,7 +67,7 @@ function AddAnswerForm(props) {
     setAuthor("");
     setScore("");
   };
-
+  
   return (
     <>
       {errorMsg ? (
@@ -118,6 +121,7 @@ function AddAnswerForm(props) {
           </Button>
         </Form>
       ) : (
+        isLoggedIn &&
         !props.showEditAnswerForm && (
           <Button
             variant="primary"
@@ -190,6 +194,7 @@ function EditAnswerForm(props) {
       respondent: author,
       date: dayjs(date),
       score: parseInt(score),
+      user_id: props.obj.user_id,
     };
     props.editAnswer(editedAnswer);
     props.setShowEditAnswerForm(false);

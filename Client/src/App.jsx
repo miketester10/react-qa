@@ -2,12 +2,16 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container } from "react-bootstrap";
 import { useEffect, useState } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NavHeader from "./components/NavHeader";
 import QuestionDescription from "./components/QuestionDescription";
 import Answers from "./components/AnswersComponents";
 import MyFooter from "./components/MyFooter";
 import LoadingBar from "./components/LoadingBar";
+import NotFoundPage from "./components/NotFoundPage";
+import LoginForm from "./components/LoginForm";
 import API from "./API";
+import AuthContext from "./components/context/AuthContext";
 
 function App() {
   const [question, setQuestion] = useState([]);
@@ -18,6 +22,8 @@ function App() {
   const [successMsg, setSuccessMsg] = useState("");
   const [successMsgTimeOutID, setSuccessMsgTimeOutID] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [user, setUser] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleError = (error) => {
     console.log(`**Errore catturato: ${error}**`);
@@ -161,33 +167,46 @@ function App() {
   };
 
   return (
-    <>
-      <NavHeader />
-      {loading ? (
-        <LoadingBar />
-      ) : (
-        <>
-          <Container fluid className="mt-3">
-            <QuestionDescription question={question} />
-            <Answers
-              answers={answers}
-              addAnswer={addAnswer}
-              editAnswer={editAnswer}
-              scoreState={scoreState}
-              sortAnswers={sortAnswers}
-              addScore={addScore}
-              deleteAnswer={deleteAnswer}
-              successMsg={successMsg}
-              successMsgTimeOutID={successMsgTimeOutID}
-              setSuccessMsg={setSuccessMsg}
-              errorMsg={errorMsg}
-              setErrorMsg={setErrorMsg}
-            />
-          </Container>
-          <MyFooter />
-        </>
-      )}
-    </>
+    <AuthContext.Provider value={{ user, setUser, isLoggedIn, setIsLoggedIn }}>
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <NavHeader />
+                {loading ? (
+                  <LoadingBar />
+                ) : (
+                  <>
+                    <Container fluid className="mt-3">
+                      <QuestionDescription question={question} />
+                      <Answers
+                        answers={answers}
+                        addAnswer={addAnswer}
+                        editAnswer={editAnswer}
+                        scoreState={scoreState}
+                        sortAnswers={sortAnswers}
+                        addScore={addScore}
+                        deleteAnswer={deleteAnswer}
+                        successMsg={successMsg}
+                        successMsgTimeOutID={successMsgTimeOutID}
+                        setSuccessMsg={setSuccessMsg}
+                        errorMsg={errorMsg}
+                        setErrorMsg={setErrorMsg}
+                      />
+                    </Container>
+                    <MyFooter />
+                  </>
+                )}
+              </>
+            }
+          />
+          <Route path="/login" element={<LoginForm />} />
+          <Route path="/*" element={<NotFoundPage />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthContext.Provider>
   );
 }
 

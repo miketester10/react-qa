@@ -1,8 +1,9 @@
 /* eslint-disable react/prop-types */
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Col, Row, Table, Button, Alert } from "react-bootstrap";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { AddAnswerForm, EditAnswerForm } from "./Forms";
+import AuthContext from "./context/AuthContext";
 
 function Answers(props) {
   const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
@@ -26,8 +27,10 @@ function Answers(props) {
   return (
     <>
       <Row>
-        <Col as="h4" className="mt-3">
-          Answers {`(${props.answers.length})`}: 
+        <Col as="p">
+          <span style={{ fontStyle: "sans-serif", fontSize: "16px" }}>
+            <strong>Answers {`(${props.answers.length})`}: </strong>
+          </span>
         </Col>
       </Row>
       <Row>
@@ -82,7 +85,7 @@ function Answers(props) {
 
 function AnswersTable(props) {
   return (
-    <Table striped>
+    <Table striped bordered>
       <thead>
         <tr>
           <th>Date</th>
@@ -157,15 +160,17 @@ function AnswerRow(props) {
 function AnswerData(props) {
   return (
     <>
-      <td>{props.answer.date.format("YYYY-MM-DD")}</td>
+      <td className="col-lg-2">{props.answer.date.format("YYYY-MM-DD")}</td>
       <td>{props.answer.text}</td>
-      <td>{props.answer.respondent}</td>
-      <td>{props.answer.score}</td>
+      <td className="col-lg-3">{props.answer.respondent}</td>
+      <td className="col-lg-1">{props.answer.score}</td>
     </>
   );
 }
 
 function AnswerActions(props) {
+  const { user, isLoggedIn } = useContext(AuthContext);
+
   const handleEditClick = () => {
     // Creo un nuovo oggetto con tutte le proprietà da aggiornare
     const objToEdit = {
@@ -174,6 +179,7 @@ function AnswerActions(props) {
       text: props.answer.text,
       author: props.answer.respondent,
       score: props.answer.score,
+      user_id: props.answer.user_id,
     };
 
     // Metto l'oggetto da modificare (objToEdit) in obj cosi da poterlo passare al form di modifica.
@@ -185,19 +191,28 @@ function AnswerActions(props) {
   };
 
   return (
-    <td>
+    <td
+      className={
+        isLoggedIn && user.id === props.answer.user_id ? "col-lg-2" : "col-lg-1"
+      }
+      style={isLoggedIn ? {} : { textAlign: "center" }}
+    >
       <Button variant="warning" onClick={() => props.addScore(props.answer.id)}>
         <i className="bi bi-arrow-up"></i>
       </Button>
-      <Button variant="primary" className="mx-1" onClick={handleEditClick}>
-        <i className="bi bi-pencil-square"></i>
-      </Button>
-      <Button
-        variant="danger"
-        onClick={() => props.deleteAnswer(props.answer.id)}
-      >
-        <i className="bi bi-trash"></i>
-      </Button>
+      {user.id === props.answer.user_id && (
+        <>
+          <Button variant="primary" className="mx-1" onClick={handleEditClick}>
+            <i className="bi bi-pencil-square"></i>
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => props.deleteAnswer(props.answer.id)}
+          >
+            <i className="bi bi-trash"></i>
+          </Button>
+        </>
+      )}
     </td>
   );
 }

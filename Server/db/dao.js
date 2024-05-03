@@ -45,10 +45,11 @@ exports.listAnswersByQuestion = (question_id) => {
       const answers = rows.map((e) => ({
         id: e.id,
         text: e.text,
-        respondent: e.respondent,
+        respondent: e.username,
         score: parseInt(e.score),
         date: dayjs(e.date),
         question_id: e.question_id,
+        user_id: e.user_id,
       }));
 
       resolve(answers);
@@ -60,12 +61,12 @@ exports.listAnswersByQuestion = (question_id) => {
 exports.createAnswer = (answer) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "INSERT INTO answers (text, respondent, date, score, question_id) VALUES (?, ?, ?, ?, ?)";
+      "INSERT INTO answers (text, username, date, score, question_id) VALUES (?, ?, ?, ?, ?)";
     db.run(
       sql,
       [
         answer.text,
-        answer.respondent,
+        answer.respondent, // sarebbe l'username
         answer.date,
         answer.score,
         answer.question_id,
@@ -85,10 +86,16 @@ exports.createAnswer = (answer) => {
 exports.editAnswer = (answer) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "UPDATE answers SET text = ?, respondent = ?, date = ?, score = ? WHERE id = ?";
+      "UPDATE answers SET text = ?, username = ?, date = ?, score = ? WHERE id = ?";
     db.run(
       sql,
-      [answer.text, answer.respondent, answer.date, answer.score, answer.id],
+      [
+        answer.text,
+        answer.respondent, // sarebbe l'username
+        answer.date,
+        answer.score,
+        answer.id,
+      ],
       (err) => {
         if (err) {
           reject(err);

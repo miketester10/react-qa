@@ -2,8 +2,8 @@ const express = require("express");
 const cors = require("cors");
 // const { check, validationResult } = require("express-validator"); // validation middleware
 // const dao = require("./db/dao");
-const questionsRouter = require('./routes/questions');
-const answersRouter = require('./routes/answers');
+const questionsRouter = require("./routes/questions");
+const answersRouter = require("./routes/answers");
 
 /*** Inizializzo Express ***/
 const app = express();
