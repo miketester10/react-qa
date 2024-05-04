@@ -58,7 +58,7 @@ exports.listAnswersByQuestion = (question_id) => {
 };
 
 // add a new answer
-exports.createAnswer = (answer) => {
+exports.createAnswer = (answer, user_id) => {
   return new Promise((resolve, reject) => {
     const sql =
       "INSERT INTO answers (text, username, date, score, question_id, user_id) VALUES (?, ?, ?, ?, ?, ?)";
@@ -70,7 +70,7 @@ exports.createAnswer = (answer) => {
         answer.date,
         answer.score,
         answer.question_id,
-        answer.user_id
+        user_id,
       ],
       (err) => {
         if (err) {
@@ -84,10 +84,10 @@ exports.createAnswer = (answer) => {
 };
 
 // edit an existing answer
-exports.editAnswer = (answer) => {
+exports.editAnswer = (answer, user_id) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "UPDATE answers SET text = ?, username = ?, date = ?, score = ? WHERE id = ?";
+      "UPDATE answers SET text = ?, username = ?, date = ?, score = ? WHERE id = ? AND user_id = ?";
     db.run(
       sql,
       [
@@ -96,6 +96,7 @@ exports.editAnswer = (answer) => {
         answer.date,
         answer.score,
         answer.id,
+        user_id,
       ],
       (err) => {
         if (err) {
@@ -124,10 +125,10 @@ exports.voteAnswer = (answer_id, vote) => {
 };
 
 // delete an existing answer
-exports.deleteAnswer = (answer_id) => {
+exports.deleteAnswer = (answer_id, user_id) => {
   return new Promise((resolve, reject) => {
-    const sql = "DELETE FROM answers WHERE id = ?";
-    db.run(sql, [answer_id], (err) => {
+    const sql = "DELETE FROM answers WHERE id = ? AND user_id = ?";
+    db.run(sql, [answer_id, user_id], (err) => {
       if (err) {
         reject(err);
         return;

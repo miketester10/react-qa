@@ -25,8 +25,7 @@ router.post(
     }
     try {
       const answer = req.body;
-      answer.user_id = req.user.id;
-      const result = await dao.createAnswer(answer);
+      const result = await dao.createAnswer(answer, req.user.id);
       setTimeout(() => res.json({ success: result }), 1000); // il setTimeout l'ho messo solo per simulare il tempo di risposta (va tolto in produzione)
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -52,7 +51,7 @@ router.put(
     }
     try {
       const answer = req.body;
-      const result = await dao.editAnswer(answer);
+      const result = await dao.editAnswer(answer, req.user.id);
       setTimeout(() => res.json({ success: result }), 1000); // il setTimeout l'ho messo solo per simulare il tempo di risposta (va tolto in produzione)
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -85,7 +84,7 @@ router.post(
 router.delete("/api/answers/:id", isLoggedIn, async (req, res) => {
   try {
     const answer_id = req.params.id;
-    const result = await dao.deleteAnswer(answer_id);
+    const result = await dao.deleteAnswer(answer_id, req.user.id);
     setTimeout(() => res.json({ success: result }), 1000); // il setTimeout l'ho messo solo per simulare il tempo di risposta (va tolto in produzione)
   } catch (error) {
     res.status(500).json({ error: error.message });

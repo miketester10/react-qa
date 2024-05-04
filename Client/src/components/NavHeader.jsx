@@ -1,12 +1,13 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { Container, Navbar } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useContext } from "react";
 import API from "../API";
 import AuthContext from "./context/AuthContext";
 
 function NavHeader(props) {
+  const navigate = useNavigate();
   const { user, isLoggedIn, setUser, setIsLoggedIn } = useContext(AuthContext);
 
   const doLogout = () => {
@@ -14,6 +15,7 @@ function NavHeader(props) {
       .then(() => {
         setUser("");
         setIsLoggedIn(false);
+        navigate("/");
         props.setSuccessMsg({
           message: "Logout effettuato!",
           variant: "added",

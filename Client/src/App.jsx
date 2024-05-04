@@ -221,7 +221,15 @@ function App() {
             path="/login"
             element={<LoginForm setSuccessMsg={setSuccessMsg} />}
           />
-          <Route path="/*" element={<NotFoundPage />} />
+          <Route
+            path="/*"
+            element={
+              <NotFoundPage
+                setSuccessMsg={setSuccessMsg}
+                setErrorMsg={setErrorMsg}
+              />
+            }
+          />
         </Routes>
       </BrowserRouter>
     </AuthContext.Provider>

@@ -1,8 +1,12 @@
+/* eslint-disable react/prop-types */
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import NavHeader from "./NavHeader";
 
-const NotFoundPage = () => {
+const NotFoundPage = (props) => {
   return (
+    <>
+    <NavHeader setSuccessMsg={props.setSuccessMsg} setErrorMsg={props.setErrorMsg}/>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -17,6 +21,7 @@ const NotFoundPage = () => {
       </p>
       <Link to="/">Torna alla Homepage</Link>
     </motion.div>
+    </>
   );
 };
 
