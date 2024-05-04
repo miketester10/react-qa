@@ -67,7 +67,7 @@ function AddAnswerForm(props) {
     setAuthor("");
     setScore("");
   };
-  
+
   return (
     <>
       {errorMsg ? (
@@ -84,7 +84,7 @@ function AddAnswerForm(props) {
         </Alert>
       ) : null}
 
-      {props.showAddAnswerForm ? (
+      {props.showAddAnswerForm && isLoggedIn ? (
         <Form onSubmit={handleSubmitAddAnswer}>
           <Form.Group className="mb-3">
             <Form.Label>Date</Form.Label>
@@ -146,6 +146,8 @@ function EditAnswerForm(props) {
   const [score, setScore] = useState(props.obj.score);
   const [errorMsg, setErrorMsg] = useState("");
   const [timeOutID, setTimeOutID] = useState(null);
+
+  const { isLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
     // siccome il componente <EditAnswerForm /> viene renderizzato prima che la props.obj sia stata definita (perchè viene definita con dei valoridopo che premo il pulsate di modifica della risposta), utilizzo useEffect per settare i valori ogni volta che la props.obj cambia, altrimenti quando apro il form di modifica i campi sono vuoti.
@@ -216,7 +218,7 @@ function EditAnswerForm(props) {
         </Alert>
       ) : null}
 
-      {props.showEditAnswerForm && (
+      {props.showEditAnswerForm && isLoggedIn ? (
         <Form onSubmit={handleSubmitEditAnswer}>
           <Form.Group className="mb-3">
             <Form.Label>Date</Form.Label>
@@ -255,7 +257,7 @@ function EditAnswerForm(props) {
             Close
           </Button>
         </Form>
-      )}
+      ) : null}
     </>
   );
 }

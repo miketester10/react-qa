@@ -1,17 +1,31 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
-import { useContext } from "react";
-import { Link } from "react-router-dom";
-import AuthContext from "./context/AuthContext";
 import { Container, Navbar } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import { useContext } from "react";
+import API from "../API";
+import AuthContext from "./context/AuthContext";
 
 function NavHeader(props) {
   const { user, isLoggedIn, setUser, setIsLoggedIn } = useContext(AuthContext);
 
   const doLogout = () => {
-    setUser('');
-    setIsLoggedIn(false);
-  }
+    API.logout()
+      .then(() => {
+        setUser("");
+        setIsLoggedIn(false);
+        props.setSuccessMsg({
+          message: "Logout effettuato!",
+          variant: "added",
+          state: true,
+        });
+      })
+      .catch((error) => {
+        props.setErrorMsg({message: "Si è verificato un errore. Riprova...", variant: "deleted"});
+      });
+    // setUser('');
+    // setIsLoggedIn(false);
+  };
 
   return (
     <Navbar bg="primary" data-bs-theme="dark">
@@ -23,7 +37,7 @@ function NavHeader(props) {
         <Navbar.Collapse className="justify-content-end">
           {isLoggedIn ? (
             <>
-              <Navbar.Brand className="fs-6" style={{marginRight:'0px'}}>
+              <Navbar.Brand className="fs-6" style={{ marginRight: "0px" }}>
                 Signed in as: {user.nome}
               </Navbar.Brand>
               <Link className="mx-2" onClick={doLogout}>

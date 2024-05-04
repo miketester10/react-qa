@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { Alert } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,7 +7,7 @@ import API from "../API";
 import AuthContext from "./context/AuthContext";
 
 const LoginForm = (props) => {
-  const [email, setEmail] = useState("mike@polito.it");
+  const [email, setEmail] = useState("mike@polito.com");
   const [password, setPassword] = useState("pwd");
   const [errorMsg, setErrorMsg] = useState("");
   const [timeOutID, setTimeOutID] = useState(null);
@@ -28,21 +29,23 @@ const LoginForm = (props) => {
       setTimeOutID(idTimeoutErrorMsg);
       return;
     }
-    doLogin();
+    const credentials = { username: email, password: password };
+    doLogin(credentials);
   };
 
   const doLogin = (credentials) => {
-    // API.login(credentials)
-    //   .then((user) => {
-    //     setUser(user);
-    //     setIsLoggedIn(true);
-    //     navigate("/");
-    //   })
-    //   .catch((error) => setErrorMsg("Email o password errati."));
-
-    setUser({ id: 1, nome: "Mike" }); // METTERE NELLA FUNZIONE doLogin
-    setIsLoggedIn(true); // METTERE NELLA FUNZIONE doLogin
-    navigate("/"); // METTERE NELLA FUNZIONE doLogin
+    API.login(credentials)
+      .then((user) => {
+        setUser(user);
+        setIsLoggedIn(true);
+        navigate("/");
+        props.setSuccessMsg({
+          message: "Login effettuato!",
+          variant: "added",
+          state: true,
+        });
+      })
+      .catch((error) => setErrorMsg("Email o password errata."));
   };
 
   return (

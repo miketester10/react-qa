@@ -174,7 +174,7 @@ function App() {
             path="/"
             element={
               <>
-                <NavHeader />
+                <NavHeader setSuccessMsg={setSuccessMsg} setErrorMsg={setErrorMsg}/>
                 {loading ? (
                   <LoadingBar />
                 ) : (
@@ -202,7 +202,7 @@ function App() {
               </>
             }
           />
-          <Route path="/login" element={<LoginForm />} />
+          <Route path="/login" element={<LoginForm setSuccessMsg={setSuccessMsg} />} />
           <Route path="/*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>

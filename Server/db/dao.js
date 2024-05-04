@@ -61,7 +61,7 @@ exports.listAnswersByQuestion = (question_id) => {
 exports.createAnswer = (answer) => {
   return new Promise((resolve, reject) => {
     const sql =
-      "INSERT INTO answers (text, username, date, score, question_id) VALUES (?, ?, ?, ?, ?)";
+      "INSERT INTO answers (text, username, date, score, question_id, user_id) VALUES (?, ?, ?, ?, ?, ?)";
     db.run(
       sql,
       [
@@ -70,6 +70,7 @@ exports.createAnswer = (answer) => {
         answer.date,
         answer.score,
         answer.question_id,
+        answer.user_id
       ],
       (err) => {
         if (err) {

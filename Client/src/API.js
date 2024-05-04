@@ -49,6 +49,7 @@ async function addAnswer(answer) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ ...answer, date: answer.date.format("YYYY-MM-DD") }),
+    credentials: "include",
   });
   if (!response.ok) {
     const errore = await response.json();
@@ -64,6 +65,7 @@ async function editAnswer(answer) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ ...answer, date: answer.date.format("YYYY-MM-DD") }),
+    credentials: "include",
   });
   if (!response.ok) {
     const errore = await response.json();
@@ -90,12 +92,47 @@ async function deleteAnswer(id) {
   // call  /api/answers/:id
   const response = await fetch(URL + `/answers/${id}`, {
     method: "DELETE",
+    credentials: "include",
   });
   if (!response.ok) {
     const errore = await response.json();
     throw errore.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
   }
 }
+
+async function login(credentials) {
+  // call  /api/login
+  const response = await fetch(URL + `/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(credentials),
+    credentials: "include",
+  });
+  const user = await response.json();
+  if (response.ok) {
+    return user;
+  } else {
+    throw user.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
+  }
+}
+
+async function logout() {
+  // call  /api/logout
+  const response = await fetch(URL + `/logout`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+  });
+  if (!response.ok) {
+    const errore = await response.json();
+    throw errore.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
+  }
+}
+
 
 const API = {
   getQuestionById,
@@ -104,5 +141,7 @@ const API = {
   editAnswer,
   voteAnswer,
   deleteAnswer,
+  login,
+  logout,
 };
 export default API;
