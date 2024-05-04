@@ -133,6 +133,18 @@ async function logout() {
   }
 }
 
+async function getCurrentUser() {
+  // call  /api/session/current
+  const response = await fetch(URL + `/session/current`, {
+    credentials: "include",
+  });
+  const user = await response.json();
+  if (response.ok) {
+    return user;
+  } else {
+    throw user.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
+  }
+}
 
 const API = {
   getQuestionById,
@@ -143,5 +155,6 @@ const API = {
   deleteAnswer,
   login,
   logout,
+  getCurrentUser,
 };
 export default API;

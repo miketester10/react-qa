@@ -21,10 +21,11 @@ function NavHeader(props) {
         });
       })
       .catch((error) => {
-        props.setErrorMsg({message: "Si è verificato un errore. Riprova...", variant: "deleted"});
+        props.setErrorMsg({
+          message: "Si è verificato un errore. Riprova...",
+          variant: "deleted",
+        });
       });
-    // setUser('');
-    // setIsLoggedIn(false);
   };
 
   return (

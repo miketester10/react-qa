@@ -22,7 +22,7 @@ function App() {
   const [successMsg, setSuccessMsg] = useState("");
   const [successMsgTimeOutID, setSuccessMsgTimeOutID] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
-  const [user, setUser] = useState('');
+  const [user, setUser] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const handleError = (error) => {
@@ -34,6 +34,18 @@ function App() {
   };
 
   const question_id = 1;
+
+  useEffect(() => {
+    // Controllo se l'utente è loggato ogni volta che si carica la pagina
+    API.getCurrentUser().then((user) => {
+      setUser(user);
+      setIsLoggedIn(true);
+    });
+    // .catch((error) => {
+    // NO need to do anything in case of error: user is simply not yet authenticated
+    // handleError(error);
+    // });
+  }, []);
 
   useEffect(() => {
     API.getQuestionById(question_id)
@@ -174,7 +186,10 @@ function App() {
             path="/"
             element={
               <>
-                <NavHeader setSuccessMsg={setSuccessMsg} setErrorMsg={setErrorMsg}/>
+                <NavHeader
+                  setSuccessMsg={setSuccessMsg}
+                  setErrorMsg={setErrorMsg}
+                />
                 {loading ? (
                   <LoadingBar />
                 ) : (
@@ -202,7 +217,10 @@ function App() {
               </>
             }
           />
-          <Route path="/login" element={<LoginForm setSuccessMsg={setSuccessMsg} />} />
+          <Route
+            path="/login"
+            element={<LoginForm setSuccessMsg={setSuccessMsg} />}
+          />
           <Route path="/*" element={<NotFoundPage />} />
         </Routes>
       </BrowserRouter>

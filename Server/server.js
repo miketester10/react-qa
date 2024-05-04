@@ -4,6 +4,7 @@ const {
   configureSession,
   initializePassport,
 } = require("./config/passport_auth");
+const session_current_router = require("./routes/session_current");
 const login_router = require("./routes/login");
 const logout_router = require("./routes/logout");
 const questions_router = require("./routes/questions");
@@ -27,6 +28,7 @@ configureSession(app);
 initializePassport(app);
 
 /*** Set-up Router ***/
+app.use(session_current_router);
 app.use(login_router);
 app.use(questions_router);
 app.use(answers_router);
