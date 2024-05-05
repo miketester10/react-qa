@@ -179,6 +179,7 @@ function AnswerData(props) {
       return secondi === 1 ? `${secondi} sec ago` : `${secondi} secs ago`;
     }
   };
+
   return (
     <>
       <td className="col-lg-2">{handleDate(props.answer.date)}</td>

@@ -1,13 +1,12 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import { Container, Navbar } from "react-bootstrap";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useContext } from "react";
 import API from "../API";
 import AuthContext from "./context/AuthContext";
 
 function NavHeader(props) {
-  const navigate = useNavigate();
 
   const { user, isLoggedIn, setUser, setIsLoggedIn, navbarLoginState } =
     useContext(AuthContext);
@@ -17,7 +16,6 @@ function NavHeader(props) {
       .then(() => {
         setUser("");
         setIsLoggedIn(false);
-        navigate("/");
         props.setSuccessMsg({
           message: "Logout effettuato!",
           variant: "added",
@@ -46,7 +44,7 @@ function NavHeader(props) {
                 <Navbar.Brand className="fs-6" style={{ marginRight: "0px" }}>
                   Signed in as: {user.nome}
                 </Navbar.Brand>
-                <Link className="mx-2" onClick={doLogout}>
+                <Link className="mx-2" to="/" onClick={doLogout}>
                   Logout
                 </Link>
               </>

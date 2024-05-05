@@ -58,7 +58,7 @@ function App() {
   }, [question_id]);
 
   useEffect(() => {
-    if (dirty || question_id) {
+    if (dirty) {
       API.getAnswersByQuestionId(question_id)
         .then((answers) => {
           setAnswers(answers);
@@ -72,7 +72,7 @@ function App() {
         })
         .catch((error) => handleError(error));
     }
-  }, [dirty, question_id]);
+  }, [dirty]);
 
   const addAnswer = (newAnswer) => {
     newAnswer.question_id = question_id;

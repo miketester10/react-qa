@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import { Col, Row } from "react-bootstrap";
-
 import { useLocation } from "react-router-dom";
 import { useContext, useEffect } from "react";
 import AuthContext from "./context/AuthContext";
