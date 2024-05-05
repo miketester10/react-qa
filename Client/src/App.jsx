@@ -2,7 +2,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import NavHeader from "./components/NavHeader";
 import QuestionDescription from "./components/QuestionDescription";
 import Answers from "./components/AnswersComponents";
@@ -22,6 +22,7 @@ function App() {
   const [successMsg, setSuccessMsg] = useState("");
   const [successMsgTimeOutID, setSuccessMsgTimeOutID] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [navbarLoginState, setNavbarLoginState] = useState(true);
   const [user, setUser] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
@@ -179,17 +180,15 @@ function App() {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, isLoggedIn, setIsLoggedIn }}>
+    <AuthContext.Provider value={{ user, setUser, isLoggedIn, setIsLoggedIn, navbarLoginState, setNavbarLoginState }}>
       <BrowserRouter>
+        <NavHeader setSuccessMsg={setSuccessMsg} setErrorMsg={setErrorMsg} />
         <Routes>
+          {/* <Route path="/" element={<Questions />} /> */}
           <Route
             path="/"
             element={
               <>
-                <NavHeader
-                  setSuccessMsg={setSuccessMsg}
-                  setErrorMsg={setErrorMsg}
-                />
                 {loading ? (
                   <LoadingBar />
                 ) : (

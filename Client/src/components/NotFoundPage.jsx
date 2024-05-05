@@ -1,12 +1,18 @@
-/* eslint-disable react/prop-types */
-import { Link } from "react-router-dom";
+/* eslint-disable no-unused-vars */
+import { useContext, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
+import AuthContext from "./context/AuthContext";
 import { motion } from "framer-motion";
-import NavHeader from "./NavHeader";
 
 const NotFoundPage = (props) => {
+  const { setNavbarLoginState } = useContext(AuthContext);
+
+  const location = useLocation();
+  useEffect(() => {
+    setNavbarLoginState(true);
+  }, [location]);
+
   return (
-    <>
-    <NavHeader setSuccessMsg={props.setSuccessMsg} setErrorMsg={props.setErrorMsg}/>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -21,7 +27,6 @@ const NotFoundPage = (props) => {
       </p>
       <Link to="/">Torna alla Homepage</Link>
     </motion.div>
-    </>
   );
 };
 

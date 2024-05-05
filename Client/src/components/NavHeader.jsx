@@ -8,7 +8,9 @@ import AuthContext from "./context/AuthContext";
 
 function NavHeader(props) {
   const navigate = useNavigate();
-  const { user, isLoggedIn, setUser, setIsLoggedIn } = useContext(AuthContext);
+
+  const { user, isLoggedIn, setUser, setIsLoggedIn, navbarLoginState } =
+    useContext(AuthContext);
 
   const doLogout = () => {
     API.logout()
@@ -37,22 +39,24 @@ function NavHeader(props) {
           <i className="bi bi-newspaper"></i> HeapOverrun
         </Navbar.Brand>
         <Navbar.Toggle />
-        <Navbar.Collapse className="justify-content-end">
-          {isLoggedIn ? (
-            <>
-              <Navbar.Brand className="fs-6" style={{ marginRight: "0px" }}>
-                Signed in as: {user.nome}
-              </Navbar.Brand>
-              <Link className="mx-2" onClick={doLogout}>
-                Logout
+        {navbarLoginState && (
+          <Navbar.Collapse className="justify-content-end">
+            {isLoggedIn ? (
+              <>
+                <Navbar.Brand className="fs-6" style={{ marginRight: "0px" }}>
+                  Signed in as: {user.nome}
+                </Navbar.Brand>
+                <Link className="mx-2" onClick={doLogout}>
+                  Logout
+                </Link>
+              </>
+            ) : (
+              <Link className="mx-2" to="/login">
+                Login
               </Link>
-            </>
-          ) : (
-            <Link className="mx-2" to="/login">
-              Login
-            </Link>
-          )}
-        </Navbar.Collapse>
+            )}
+          </Navbar.Collapse>
+        )}
       </Container>
     </Navbar>
   );
