@@ -1,6 +1,7 @@
 /* eslint-disable react/prop-types */
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Col, Row, Table, Button, Alert } from "react-bootstrap";
+import dayjs from "dayjs";
 import { useContext, useState } from "react";
 import { AddAnswerForm, EditAnswerForm } from "./Forms";
 import AuthContext from "./context/AuthContext";
@@ -88,7 +89,7 @@ function AnswersTable(props) {
     <Table striped bordered>
       <thead>
         <tr>
-          <th>Date</th>
+          <th>Answered</th>
           <th>Text</th>
           <th>Author</th>
           <th>
@@ -158,9 +159,29 @@ function AnswerRow(props) {
 }
 
 function AnswerData(props) {
+  const handleDate = (date) => {
+    const initialDate = date;
+    const currentDate = dayjs();
+    const secondi = currentDate.diff(initialDate, "second");
+    const minuti = currentDate.diff(initialDate, "minute");
+    const ore = currentDate.diff(initialDate, "hour");
+    const giorni = currentDate.diff(initialDate, "day");
+
+    if (giorni > 4) {
+      return `${date.format("MMM D, YYYY")}`;
+    } else if (giorni > 0) {
+      return giorni === 1 ? `${giorni} day ago` : `${giorni} days ago`;
+    } else if (ore > 0) {
+      return ore === 1 ? `${ore} hour ago` : `${ore} hours ago`;
+    } else if (minuti > 0) {
+      return minuti === 1 ? `${minuti} min ago` : `${minuti} mins ago`;
+    } else {
+      return secondi === 1 ? `${secondi} sec ago` : `${secondi} secs ago`;
+    }
+  };
   return (
     <>
-      <td className="col-lg-2">{props.answer.date.format("YYYY-MM-DD")}</td>
+      <td className="col-lg-2">{handleDate(props.answer.date)}</td>
       <td>{props.answer.text}</td>
       <td className="col-lg-3">{props.answer.respondent}</td>
       <td className="col-lg-1">{props.answer.score}</td>
@@ -175,7 +196,7 @@ function AnswerActions(props) {
     // Creo un nuovo oggetto con tutte le proprietà da aggiornare
     const objToEdit = {
       id: props.answer.id,
-      date: props.answer.date.format("YYYY-MM-DD"),
+      date: props.answer.date,
       text: props.answer.text,
       author: props.answer.respondent,
       score: props.answer.score,

@@ -3,6 +3,7 @@ const router = express.Router();
 const { check, validationResult } = require("express-validator"); // validation middleware
 const isLoggedIn = require("../middleware/isLoggedIn");
 const dao = require("../db/dao");
+const dayjs = require("dayjs");
 
 /*** APIs ***/
 
@@ -11,7 +12,7 @@ router.post(
   "/api/answers",
   isLoggedIn,
   [
-    check("date").isDate({ format: "YYYY-MM-DD", strictMode: true }),
+    check("date").isISO8601(),
     check("text").isLength({ min: 2 }),
     check("respondent").isLength({ min: 2 }),
     check("score").isInt(),
@@ -38,7 +39,7 @@ router.put(
   "/api/answers/:id",
   isLoggedIn,
   [
-    check("date").isDate({ format: "YYYY-MM-DD", strictMode: true }),
+    check("date").isISO8601(),
     check("text").isLength({ min: 2 }),
     check("respondent").isLength({ min: 2 }),
     check("score").isInt(),

@@ -48,7 +48,7 @@ async function addAnswer(answer) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ ...answer, date: answer.date.format("YYYY-MM-DD") }),
+    body: JSON.stringify({ ...answer, date: answer.date }),
     credentials: "include",
   });
   if (!response.ok) {
@@ -64,7 +64,7 @@ async function editAnswer(answer) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ ...answer, date: answer.date.format("YYYY-MM-DD") }),
+    body: JSON.stringify({ ...answer, date: answer.date }),
     credentials: "include",
   });
   if (!response.ok) {

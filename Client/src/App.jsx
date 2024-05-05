@@ -2,8 +2,9 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Container } from "react-bootstrap";
 import { useEffect, useState } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NavHeader from "./components/NavHeader";
+import QuestionsList from "./components/QuestionsList";
 import QuestionDescription from "./components/QuestionDescription";
 import Answers from "./components/AnswersComponents";
 import MyFooter from "./components/MyFooter";
@@ -34,7 +35,7 @@ function App() {
     setDirty(true);
   };
 
-  const question_id = 1;
+  const question_id = 1; // deve diventare uno state
 
   useEffect(() => {
     // Controllo se l'utente è loggato ogni volta che si carica la pagina
@@ -54,10 +55,10 @@ function App() {
         setQuestion(question);
       })
       .catch((error) => handleError(error));
-  }, []);
+  }, [question_id]);
 
   useEffect(() => {
-    if (dirty) {
+    if (dirty || question_id) {
       API.getAnswersByQuestionId(question_id)
         .then((answers) => {
           setAnswers(answers);
@@ -71,7 +72,7 @@ function App() {
         })
         .catch((error) => handleError(error));
     }
-  }, [dirty]);
+  }, [dirty, question_id]);
 
   const addAnswer = (newAnswer) => {
     newAnswer.question_id = question_id;
@@ -180,13 +181,22 @@ function App() {
   };
 
   return (
-    <AuthContext.Provider value={{ user, setUser, isLoggedIn, setIsLoggedIn, navbarLoginState, setNavbarLoginState }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        setUser,
+        isLoggedIn,
+        setIsLoggedIn,
+        navbarLoginState,
+        setNavbarLoginState,
+      }}
+    >
       <BrowserRouter>
         <NavHeader setSuccessMsg={setSuccessMsg} setErrorMsg={setErrorMsg} />
         <Routes>
-          {/* <Route path="/" element={<Questions />} /> */}
+          <Route path="/" element={<QuestionsList />} />
           <Route
-            path="/"
+            path="/questions/:id/answers"
             element={
               <>
                 {loading ? (

@@ -53,7 +53,7 @@ function AddAnswerForm(props) {
     const newAnswer = {
       text: text,
       respondent: author,
-      date: dayjs(date),
+      date: dayjs(),
       score: parseInt(score),
     };
     props.addAnswer(newAnswer);
@@ -140,27 +140,28 @@ function AddAnswerForm(props) {
 }
 
 function EditAnswerForm(props) {
-  const [date, setDate] = useState(props.obj.date);
-  const [text, setText] = useState(props.obj.text);
-  const [author, setAuthor] = useState(props.obj.author);
-  const [score, setScore] = useState(props.obj.score);
+  const [date, setDate] = useState("");
+  const [text, setText] = useState("");
+  const [author, setAuthor] = useState("");
+  const [score, setScore] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
   const [timeOutID, setTimeOutID] = useState(null);
 
   const { isLoggedIn } = useContext(AuthContext);
 
   useEffect(() => {
-    // siccome il componente <EditAnswerForm /> viene renderizzato prima che la props.obj sia stata definita (perchè viene definita con dei valoridopo che premo il pulsate di modifica della risposta), utilizzo useEffect per settare i valori ogni volta che la props.obj cambia, altrimenti quando apro il form di modifica i campi sono vuoti.
-    setDate(props.obj.date);
+    // siccome il componente <EditAnswerForm /> viene renderizzato prima che la props.obj sia stata definita (perchè viene definita con dei valori dopo che premo il pulsate di modifica della risposta), utilizzo useEffect per settare i valori ogni volta che la props.obj cambia, altrimenti quando apro il form di modifica i campi sono vuoti.
+    setDate(props.obj.date ? props.obj.date.format("YYYY-MM-DD") : "");
     setText(props.obj.text);
     setAuthor(props.obj.author);
     setScore(props.obj.score);
   }, [props.obj]);
 
-  const handleDate = (event) => {
-    const value = event.target.value;
-    setDate(value);
-  };
+  /*** solo se voglio permettere all'utente di selezionare la data ***/
+  // const handleDate = (event) => {
+  //   const value = event.target.value;
+  //   setDate(value);
+  // };
 
   const handleText = (event) => {
     const value = event.target.value;
@@ -194,7 +195,7 @@ function EditAnswerForm(props) {
       id: props.obj.id,
       text: text,
       respondent: author,
-      date: dayjs(date),
+      date: props.obj.date,
       score: parseInt(score),
       user_id: props.obj.user_id,
     };
@@ -222,12 +223,8 @@ function EditAnswerForm(props) {
         <Form onSubmit={handleSubmitEditAnswer}>
           <Form.Group className="mb-3">
             <Form.Label>Date</Form.Label>
-            <Form.Control
-              type="date"
-              value={date}
-              onChange={handleDate}
-              disabled
-            />
+            {/* <Form.Control type="date" value={date} onChange={handleDate} /> // solo se voglio permettere all'utente di selezionare la data */}
+            <Form.Control type="date" value={date} disabled />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Text</Form.Label>
