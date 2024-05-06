@@ -6,6 +6,22 @@ import dayjs from "dayjs";
 
 const URL = "http://localhost:8080/api";
 
+async function getQuestions() {
+  // call  /api/questions
+  const response = await fetch(URL + "/questions");
+  const questions = await response.json();
+  if (response.ok) {
+    return questions.map((e) => ({
+      id: e.id,
+      text: e.text,
+      email: e.email,
+      date: dayjs(e.date),
+    }));
+  } else {
+    throw questions.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
+  }
+}
+
 async function getQuestionById(id) {
   // call  /api/questions/<id>
   const response = await fetch(URL + `/questions/${id}`);
@@ -147,6 +163,7 @@ async function getCurrentUser() {
 }
 
 const API = {
+  getQuestions,
   getQuestionById,
   getAnswersByQuestionId,
   addAnswer,

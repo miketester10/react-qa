@@ -5,8 +5,28 @@ const db = new sqlite.Database("./db/react-qa.db", (err) => {
   if (err) throw err;
 });
 
+exports.getQuestions = () => {
+  return new Promise((resolve, reject) => {
+    const sql = `SELECT * FROM questions
+                  ORDER BY date DESC`;
+    db.all(sql, (err, rows) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      const questions = rows.map((e) => ({
+        id: e.id,
+        text: e.text,
+        email: e.email,
+        date: dayjs(e.date),
+      }));
+      resolve(questions);
+    });
+  });
+};
+
 // get the question identified by {id}
-exports.getQuestion = (question_id) => {
+exports.getQuestionById = (question_id) => {
   return new Promise((resolve, reject) => {
     const sql = "SELECT * FROM questions WHERE id = ?";
 
@@ -35,7 +55,7 @@ exports.getQuestion = (question_id) => {
 exports.listAnswersByQuestion = (question_id) => {
   return new Promise((resolve, reject) => {
     const sql = `SELECT * FROM answers WHERE question_id = ? 
-                ORDER BY score DESC, date DESC`;
+                ORDER BY score DESC`;
 
     db.all(sql, [question_id], (err, rows) => {
       if (err) {
@@ -51,7 +71,6 @@ exports.listAnswersByQuestion = (question_id) => {
         question_id: e.question_id,
         user_id: e.user_id,
       }));
-
       resolve(answers);
     });
   });

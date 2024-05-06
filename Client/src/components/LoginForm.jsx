@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { Alert } from "react-bootstrap";
@@ -28,7 +29,6 @@ const LoginForm = (props) => {
       setErrorMsg("");
       clearTimeout(timeOutID);
     }
-
     // Form validation
     if (!email || !password) {
       setErrorMsg("Tutti i campi devono essere compilati.");
@@ -41,16 +41,21 @@ const LoginForm = (props) => {
   };
 
   const doLogin = (credentials) => {
+    if (props.successMsg) {
+      props.setSuccessMsg("");
+      clearTimeout(props.successMsgTimeOutID);
+    }
     API.login(credentials)
       .then((user) => {
         setUser(user);
         setIsLoggedIn(true);
         navigate("/");
         props.setSuccessMsg({
-          message: "Login effettuato!",
+          message_questionsComponent: "Login effettuato!",
           variant: "added",
-          state: true,
         });
+        const id = setTimeout(() => props.setSuccessMsg(""), 4000);
+        props.setSuccessMsgTimeOutID(id);
       })
       .catch((error) => setErrorMsg("Email o password errata."));
   };
@@ -117,7 +122,11 @@ const LoginForm = (props) => {
                   >
                     Registrati
                   </button>
-                  <Link className="mt-2" to="/">
+                  <Link
+                    className="mt-2"
+                    to="/"
+                    style={{ textDecoration: "none" }}
+                  >
                     Torna alla Homepage
                   </Link>
                 </div>

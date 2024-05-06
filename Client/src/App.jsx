@@ -4,7 +4,8 @@ import { Container } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import NavHeader from "./components/NavHeader";
-import QuestionsList from "./components/QuestionsList";
+import QuestionsTitle from "./components/QuestionsTitle";
+import QuestionsComponent from "./components/QuestionsComponent";
 import QuestionDescription from "./components/QuestionDescription";
 import Answers from "./components/AnswersComponents";
 import MyFooter from "./components/MyFooter";
@@ -15,11 +16,12 @@ import API from "./API";
 import AuthContext from "./components/context/AuthContext";
 
 function App() {
+  const [questions, setQuestions] = useState([]);
   const [question, setQuestion] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [scoreState, setScoreState] = useState("desc");
   const [loading, setLoading] = useState(true);
-  const [dirty, setDirty] = useState(true);
+  const [dirty, setDirty] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [successMsgTimeOutID, setSuccessMsgTimeOutID] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
@@ -35,8 +37,6 @@ function App() {
     setDirty(true);
   };
 
-  const question_id = 1; // deve diventare uno state
-
   useEffect(() => {
     // Controllo se l'utente è loggato ogni volta che si carica la pagina
     API.getCurrentUser().then((user) => {
@@ -50,32 +50,39 @@ function App() {
   }, []);
 
   useEffect(() => {
-    API.getQuestionById(question_id)
-      .then((question) => {
-        setQuestion(question);
+    API.getQuestions()
+      .then((questions) => {
+        setQuestions(questions);
+        setLoading(false);
       })
       .catch((error) => handleError(error));
-  }, [question_id]);
+  }, [dirty]);
+
+  const getQuestionById = (question, navigate = null) => {
+    API.getQuestionById(question.id)
+      .then((question) => {
+        setQuestion(question);
+        setLoading(true);
+        setDirty(true);
+        navigate(`/questions/${question.id}/answers`);
+      })
+      .catch((error) => handleError(error));
+  };
 
   useEffect(() => {
     if (dirty) {
-      API.getAnswersByQuestionId(question_id)
+      API.getAnswersByQuestionId(question.id)
         .then((answers) => {
           setAnswers(answers);
           setLoading(false);
           setDirty(false);
-          if (successMsg) {
-            setSuccessMsg((oldObj) => ({ ...oldObj, state: true }));
-            const id = setTimeout(() => setSuccessMsg(""), 4000);
-            setSuccessMsgTimeOutID(id);
-          }
         })
         .catch((error) => handleError(error));
     }
   }, [dirty]);
 
   const addAnswer = (newAnswer) => {
-    newAnswer.question_id = question_id;
+    newAnswer.question_id = question.id;
     newAnswer.status = "added";
     setAnswers((oldAnswers) => {
       const temporary_key =
@@ -91,10 +98,11 @@ function App() {
     API.addAnswer(newAnswer)
       .then(() => {
         setSuccessMsg({
-          message: "Risposta aggiunta correttamente!",
+          message_answersComponent: "Risposta aggiunta correttamente!",
           variant: "added",
-          state: false,
         });
+        const id = setTimeout(() => setSuccessMsg(""), 4000);
+        setSuccessMsgTimeOutID(id);
         setDirty(true);
       })
       .catch((error) => handleError(error));
@@ -119,27 +127,13 @@ function App() {
     API.editAnswer(editedAnswer)
       .then(() => {
         setSuccessMsg({
-          message: "Risposta aggiornata correttamente!",
+          message_answersComponent: "Risposta aggiornata correttamente!",
           variant: "updated",
-          state: false,
         });
+        const id = setTimeout(() => setSuccessMsg(""), 4000);
+        setSuccessMsgTimeOutID(id);
         setDirty(true);
       })
-      .catch((error) => handleError(error));
-  };
-
-  const addScore = (id) => {
-    setAnswers((oldAnswers) =>
-      oldAnswers.map((answer) => {
-        if (answer.id === id) {
-          return { ...answer, score: answer.score + 1, status: "updated" };
-        } else {
-          return answer;
-        }
-      })
-    );
-    API.voteAnswer(id)
-      .then(() => setDirty(true))
       .catch((error) => handleError(error));
   };
 
@@ -161,12 +155,28 @@ function App() {
     API.deleteAnswer(id)
       .then(() => {
         setSuccessMsg({
-          message: "Risposta eliminata correttamente!",
+          message_answersComponent: "Risposta eliminata correttamente!",
           variant: "deleted",
-          state: false,
         });
+        const id = setTimeout(() => setSuccessMsg(""), 4000);
+        setSuccessMsgTimeOutID(id);
         setDirty(true);
       })
+      .catch((error) => handleError(error));
+  };
+
+  const addScore = (id) => {
+    setAnswers((oldAnswers) =>
+      oldAnswers.map((answer) => {
+        if (answer.id === id) {
+          return { ...answer, score: answer.score + 1, status: "updated" };
+        } else {
+          return answer;
+        }
+      })
+    );
+    API.voteAnswer(id)
+      .then(() => setDirty(true))
       .catch((error) => handleError(error));
   };
 
@@ -192,9 +202,35 @@ function App() {
       }}
     >
       <BrowserRouter>
-        <NavHeader setSuccessMsg={setSuccessMsg} setErrorMsg={setErrorMsg} />
+        <NavHeader
+          successMsg={successMsg}
+          setSuccessMsg={setSuccessMsg}
+          successMsgTimeOutID={successMsgTimeOutID}
+          setSuccessMsgTimeOutID={setSuccessMsgTimeOutID}
+          setErrorMsg={setErrorMsg}
+        />
         <Routes>
-          <Route path="/" element={<QuestionsList />} />
+          <Route
+            path="/"
+            element={
+              loading ? (
+                <LoadingBar />
+              ) : (
+                <Container fluid className="mt-3">
+                  <QuestionsTitle questions={questions} />
+                  <QuestionsComponent
+                    questions={questions}
+                    getQuestionById={getQuestionById}
+                    successMsg={successMsg}
+                    successMsgTimeOutID={successMsgTimeOutID}
+                    setSuccessMsg={setSuccessMsg}
+                    errorMsg={errorMsg}
+                    setErrorMsg={setErrorMsg}
+                  />
+                </Container>
+              )
+            }
+          />
           <Route
             path="/questions/:id/answers"
             element={
@@ -228,7 +264,14 @@ function App() {
           />
           <Route
             path="/login"
-            element={<LoginForm setSuccessMsg={setSuccessMsg} />}
+            element={
+              <LoginForm
+                successMsg={successMsg}
+                setSuccessMsg={setSuccessMsg}
+                successMsgTimeOutID={successMsgTimeOutID}
+                setSuccessMsgTimeOutID={setSuccessMsgTimeOutID}
+              />
+            }
           />
           <Route
             path="/*"

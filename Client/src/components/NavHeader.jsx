@@ -7,26 +7,31 @@ import API from "../API";
 import AuthContext from "./context/AuthContext";
 
 function NavHeader(props) {
-
   const { user, isLoggedIn, setUser, setIsLoggedIn, navbarLoginState } =
     useContext(AuthContext);
 
   const doLogout = () => {
+    if (props.successMsg) {
+      props.setSuccessMsg("");
+      clearTimeout(props.successMsgTimeOutID);
+    }
     API.logout()
       .then(() => {
         setUser("");
         setIsLoggedIn(false);
         props.setSuccessMsg({
-          message: "Logout effettuato!",
+          message_questionsComponent: "Logout effettuato!",
           variant: "added",
-          state: true,
         });
+        const id = setTimeout(() => props.setSuccessMsg(""), 4000);
+        props.setSuccessMsgTimeOutID(id);
       })
       .catch((error) => {
         props.setErrorMsg({
           message: "Si è verificato un errore. Riprova...",
           variant: "deleted",
         });
+        setTimeout(() => props.setErrorMsg(""), 4000);
       });
   };
 
@@ -34,7 +39,9 @@ function NavHeader(props) {
     <Navbar bg="primary" data-bs-theme="dark">
       <Container fluid>
         <Navbar.Brand>
-          <i className="bi bi-newspaper"></i> HeapOverrun
+          <Link to={"/"} style={{ textDecoration: "none", color: "white" }}>
+            <i className="bi bi-newspaper"></i> HeapOverrun
+          </Link>
         </Navbar.Brand>
         <Navbar.Toggle />
         {navbarLoginState && (
@@ -44,12 +51,21 @@ function NavHeader(props) {
                 <Navbar.Brand className="fs-6" style={{ marginRight: "0px" }}>
                   Signed in as: {user.nome}
                 </Navbar.Brand>
-                <Link className="mx-2" to="/" onClick={doLogout}>
+                <Link
+                  className="mx-2"
+                  to="/"
+                  onClick={doLogout}
+                  style={{ textDecoration: "none" }}
+                >
                   Logout
                 </Link>
               </>
             ) : (
-              <Link className="mx-2" to="/login">
+              <Link
+                className="mx-2"
+                to="/login"
+                style={{ textDecoration: "none" }}
+              >
                 Login
               </Link>
             )}

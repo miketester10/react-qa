@@ -25,7 +25,7 @@ const NotFoundPage = (props) => {
         La pagina che stai cercando potrebbe essere stata rimossa o non essere
         disponibile al momento.
       </p>
-      <Link to="/">Torna alla Homepage</Link>
+      <Link to="/" style={{ textDecoration: "none" }}>Torna alla Homepage</Link>
     </motion.div>
   );
 };

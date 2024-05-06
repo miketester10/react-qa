@@ -3,6 +3,7 @@ import "bootstrap-icons/font/bootstrap-icons.css";
 import { Col, Row, Table, Button, Alert } from "react-bootstrap";
 import dayjs from "dayjs";
 import { useContext, useState } from "react";
+import { Link } from "react-router-dom";
 import { AddAnswerForm, EditAnswerForm } from "./Forms";
 import AuthContext from "./context/AuthContext";
 
@@ -10,6 +11,7 @@ function Answers(props) {
   const [showAddAnswerForm, setShowAddAnswerForm] = useState(false);
   const [showEditAnswerForm, setShowEditAnswerForm] = useState(false);
   const [obj, setObj] = useState("");
+  const { isLoggedIn } = useContext(AuthContext);
 
   let variant = null;
   switch (props.successMsg.variant || props.errorMsg.variant) {
@@ -34,52 +36,75 @@ function Answers(props) {
           </span>
         </Col>
       </Row>
-      <Row>
-        <Col lg={10} className="mx-auto">
-          {props.successMsg.state || props.errorMsg ? (
-            <Alert
-              className="text-center"
-              variant={variant}
-              onClose={() => {
-                props.setSuccessMsg("");
-                clearTimeout(props.successMsgTimeOutID);
-                props.setErrorMsg("");
-              }}
-              dismissible
+      {props.answers.length === 0 && !isLoggedIn ? (
+        <Row>
+          <Col as="p">
+            <italic>
+              No answer present.{" "}
+              <Link to="/login" style={{ textDecoration: "none" }}>
+                Be the first.
+              </Link>
+            </italic>
+          </Col>
+        </Row>
+      ) : (
+        <>
+          {props.answers.length === 0 ? null : (
+            <Row>
+              <Col lg={10} className="mx-auto">
+                {props.successMsg.message_answersComponent || props.errorMsg ? (
+                  <Alert
+                    className="text-center"
+                    variant={variant}
+                    onClose={() => {
+                      props.setSuccessMsg("");
+                      clearTimeout(props.successMsgTimeOutID);
+                      props.setErrorMsg("");
+                    }}
+                    dismissible
+                  >
+                    {props.successMsg.message_answersComponent ||
+                      props.errorMsg.message}
+                  </Alert>
+                ) : null}
+
+                <AnswersTable
+                  answers={props.answers}
+                  scoreState={props.scoreState}
+                  sortAnswers={props.sortAnswers}
+                  addScore={props.addScore}
+                  deleteAnswer={props.deleteAnswer}
+                  setShowAddAnswerForm={setShowAddAnswerForm}
+                  setShowEditAnswerForm={setShowEditAnswerForm}
+                  setObj={setObj}
+                ></AnswersTable>
+              </Col>
+            </Row>
+          )}
+
+          <Row>
+            <Col
+              lg={10}
+              className={props.answers.length === 0 ? "mx-6" : "mx-auto"}
             >
-              {props.successMsg.message || props.errorMsg.message}
-            </Alert>
-          ) : null}
-          <AnswersTable
-            answers={props.answers}
-            scoreState={props.scoreState}
-            sortAnswers={props.sortAnswers}
-            addScore={props.addScore}
-            deleteAnswer={props.deleteAnswer}
-            setShowAddAnswerForm={setShowAddAnswerForm}
-            setShowEditAnswerForm={setShowEditAnswerForm}
-            setObj={setObj}
-          ></AnswersTable>
-        </Col>
-      </Row>
-      <Row>
-        <Col lg={10} className="mx-auto">
-          <AddAnswerForm
-            addAnswer={props.addAnswer}
-            showAddAnswerForm={showAddAnswerForm}
-            showEditAnswerForm={showEditAnswerForm}
-            setShowAddAnswerForm={setShowAddAnswerForm}
-            setShowEditAnswerForm={setShowEditAnswerForm}
-          />
-          <EditAnswerForm
-            editAnswer={props.editAnswer}
-            showEditAnswerForm={showEditAnswerForm}
-            setShowEditAnswerForm={setShowEditAnswerForm}
-            obj={obj}
-            setObj={setObj}
-          />
-        </Col>
-      </Row>
+              <AddAnswerForm
+                addAnswer={props.addAnswer}
+                showAddAnswerForm={showAddAnswerForm}
+                showEditAnswerForm={showEditAnswerForm}
+                setShowAddAnswerForm={setShowAddAnswerForm}
+                setShowEditAnswerForm={setShowEditAnswerForm}
+              />
+              <EditAnswerForm
+                editAnswer={props.editAnswer}
+                showEditAnswerForm={showEditAnswerForm}
+                setShowEditAnswerForm={setShowEditAnswerForm}
+                obj={obj}
+                setObj={setObj}
+              />
+            </Col>
+          </Row>
+        </>
+      )}
     </>
   );
 }
