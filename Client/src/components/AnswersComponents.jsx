@@ -106,6 +106,7 @@ function Answers(props) {
                 setShowEditAnswerForm={setShowEditAnswerForm}
               />
               <EditAnswerForm
+                // key = {obj.id} // se non voglio usare useEffect all'interno di EditAnswerForm per modificare i campi del form ogni volta che premo il bottone di Edit
                 editAnswer={props.editAnswer}
                 showEditAnswerForm={showEditAnswerForm}
                 setShowEditAnswerForm={setShowEditAnswerForm}
@@ -241,7 +242,7 @@ function AnswerActions(props) {
     };
 
     // Metto l'oggetto da modificare (objToEdit) in obj cosi da poterlo passare al form di modifica.
-    props.setObj(() => objToEdit);
+    props.setObj(objToEdit);
 
     // Metto a false il form di aggiunta risposta così se era aperto si chiude e metto a true il form di modifica risposta per renderlo visibile
     props.setShowAddAnswerForm(false);
