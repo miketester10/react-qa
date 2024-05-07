@@ -21,7 +21,6 @@ function App() {
   const [answers, setAnswers] = useState([]);
   const [scoreState, setScoreState] = useState("desc");
   const [loading, setLoading] = useState(true);
-  const [dirtyQuestions, setDirtyQuestions] = useState(true);
   const [dirty, setDirty] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [successMsgTimeOutID, setSuccessMsgTimeOutID] = useState(null);
@@ -52,16 +51,14 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (dirtyQuestions) {
-      API.getQuestions()
-        .then((questions) => {
-          setQuestions(questions);
-          setLoading(false);
-          setDirtyQuestions(false);
-        })
-        .catch((error) => handleError(error));
-    }
-  }, [dirtyQuestions]);
+    API.getQuestions()
+      .then((questions) => {
+        setQuestions(questions);
+        setLoading(false);
+        setDirty(false);
+      })
+      .catch((error) => handleError(error));
+  }, [dirty]);
 
   const getQuestionById = (question, navigate = null) => {
     API.getQuestionById(question.id)
@@ -82,6 +79,7 @@ function App() {
 
   useEffect(() => {
     if (dirty) {
+      if (question == "") {return;}
       API.getAnswersByQuestionId(question.id)
         .then((answers) => {
           setAnswers(answers);
@@ -199,7 +197,7 @@ function App() {
         });
         const id = setTimeout(() => setSuccessMsg(""), 4000);
         setSuccessMsgTimeOutID(id);
-        setDirtyQuestions(true);
+        setDirty(true);
       })
       .catch((error) => handleError(error));
   };
