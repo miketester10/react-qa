@@ -84,7 +84,7 @@ router.post(
 // API per eliminare una risposta
 router.delete("/api/answers/:id", isLoggedIn, async (req, res) => {
   try {
-    const answer_id = req.params.id;
+    const answer_id = req.params.id;;
     const result = await dao.deleteAnswer(answer_id, req.user.id);
     setTimeout(() => res.json({ success: result }), 1000); // il setTimeout l'ho messo solo per simulare il tempo di risposta (va tolto in produzione)
   } catch (error) {

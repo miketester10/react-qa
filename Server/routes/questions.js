@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const dao = require("../db/dao");
+const isLoggedIn = require("../middleware/isLoggedIn");
+const dayjs = require("dayjs");
 
 /*** APIs ***/
 
@@ -40,6 +42,17 @@ router.get("/api/questions/:id/answers/", async (req, res) => {
       const answers = await dao.listAnswersByQuestion(question_id);
       setTimeout(() => res.json(answers), 1000); // il setTimeout l'ho messo solo per simulare il tempo di risposta (va tolto in produzione)
     }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// API per eliminare una domanda
+router.delete("/api/questions/:id", isLoggedIn, async (req, res) => {
+  try {
+    const question_id = req.params.id;
+    const result = await dao.deleteQuestion(question_id, req.user.id);
+    setTimeout(() => res.json({ success: result }), 1000); // il setTimeout l'ho messo solo per simulare il tempo di risposta (va tolto in produzione)
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

@@ -2,7 +2,7 @@
 /* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 import { Alert } from "react-bootstrap";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState, useContext, useEffect } from "react";
 import API from "../API";
 import AuthContext from "./context/AuthContext";
@@ -18,10 +18,9 @@ const LoginForm = (props) => {
   const { setUser, setIsLoggedIn, setNavbarLoginState } =
     useContext(AuthContext);
 
-  const location = useLocation();
   useEffect(() => {
     setNavbarLoginState(false);
-  }, [location]);
+  }, []);
 
   const handleSubmit = (event) => {
     event.preventDefault();

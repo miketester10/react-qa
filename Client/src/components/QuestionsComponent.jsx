@@ -4,16 +4,15 @@
 import { Alert, Col, Row, Table, Button } from "react-bootstrap";
 import dayjs from "dayjs";
 import { useContext, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AuthContext from "./context/AuthContext";
 
 function Questions(props) {
   const { setNavbarLoginState } = useContext(AuthContext);
 
-  const location = useLocation();
   useEffect(() => {
     setNavbarLoginState(true);
-  }, [location]);
+  }, []);
 
   let variant = null;
   switch (props.successMsg.variant || props.errorMsg.variant) {
@@ -52,6 +51,7 @@ function Questions(props) {
           <QuestionsTable
             questions={props.questions}
             getQuestionById={props.getQuestionById}
+            deleteQuestion={props.deleteQuestion}
           />
         </Col>
       </Row>
@@ -66,6 +66,7 @@ function Questions(props) {
 }
 
 function QuestionsTable(props) {
+  const { isLoggedIn, user } = useContext(AuthContext);
   return (
     <Table striped bordered>
       <thead>
@@ -73,17 +74,20 @@ function QuestionsTable(props) {
           <th>Asked</th>
           <th>Text</th>
           <th>Author</th>
-          <th>Actions</th>
+          {isLoggedIn && props.questions.some((q) => q.user_id === user.id) ? (
+            <th>Actions</th>
+          ) : null}
         </tr>
       </thead>
       <tbody>
         {props.questions.map((question) => (
-          <AnswerRow
+          <QuestionRow
             key={question.id}
             question={question}
+            questions={props.questions}
             getQuestionById={props.getQuestionById}
             // addScore={props.addScore}
-            // deleteAnswer={props.deleteAnswer}
+            deleteQuestion={props.deleteQuestion}
             // setShowAddAnswerForm={props.setShowAddAnswerForm}
             // setShowEditAnswerForm={props.setShowEditAnswerForm}
             // setObj={props.setObj}
@@ -94,26 +98,46 @@ function QuestionsTable(props) {
   );
 }
 
-function AnswerRow(props) {
+function QuestionRow(props) {
+  const { isLoggedIn, user } = useContext(AuthContext);
+
+  let statusClass = null;
+
+  switch (props.question.status) {
+    case "added":
+      statusClass = "table-success";
+      break;
+    case "deleted":
+      statusClass = "table-danger";
+      break;
+    case "updated":
+      statusClass = "table-warning";
+      break;
+    default:
+      break;
+  }
+
   return (
-    <tr>
-      <AnswerData
+    <tr className={statusClass}>
+      <QuestionData
         question={props.question}
         getQuestionById={props.getQuestionById}
       />
-      <AnswerActions
-        question={props.question}
-        // addScore={props.addScore}
-        // setShowAddAnswerForm={props.setShowAddAnswerForm}
-        // setShowEditAnswerForm={props.setShowEditAnswerForm}
-        // deleteAnswer={props.deleteAnswer}
-        // setObj={props.setObj}
-      />
+      {isLoggedIn && props.questions.some((q) => q.user_id === user.id) ? (
+        <QuestionActions
+          question={props.question}
+          // addScore={props.addScore}
+          // setShowAddAnswerForm={props.setShowAddAnswerForm}
+          // setShowEditAnswerForm={props.setShowEditAnswerForm}
+          deleteQuestion={props.deleteQuestion}
+          // setObj={props.setObj}
+        />
+      ) : null}
     </tr>
   );
 }
 
-function AnswerData(props) {
+function QuestionData(props) {
   const navigate = useNavigate();
   const handleDate = (date) => {
     const initialDate = date;
@@ -154,15 +178,30 @@ function AnswerData(props) {
   );
 }
 
-function AnswerActions(props) {
+function QuestionActions(props) {
+  const { user, isLoggedIn } = useContext(AuthContext);
   return (
-    <td className={"col-lg-2"}>
-      <Button variant="primary" className="mx-1">
-        <i className="bi bi-pencil-square"></i>
-      </Button>
-      <Button variant="danger">
-        <i className="bi bi-trash"></i>
-      </Button>
+    <td
+      className={
+        isLoggedIn && user.id === props.question.user_id
+          ? "col-lg-1"
+          : "col-lg-2"
+      }
+      style={isLoggedIn ? { textAlign: "center" } : {}}
+    >
+      {user.id === props.question.user_id && (
+        <>
+          <Button variant="primary" className="mx-1">
+            <i className="bi bi-pencil-square"></i>
+          </Button>
+          <Button
+            variant="danger"
+            onClick={() => props.deleteQuestion(props.question.id)}
+          >
+            <i className="bi bi-trash"></i>
+          </Button>
+        </>
+      )}
     </td>
   );
 }

@@ -1,16 +1,15 @@
 /* eslint-disable no-unused-vars */
 import { useContext, useEffect } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import AuthContext from "./context/AuthContext";
 import { motion } from "framer-motion";
 
 const NotFoundPage = (props) => {
   const { setNavbarLoginState } = useContext(AuthContext);
 
-  const location = useLocation();
   useEffect(() => {
     setNavbarLoginState(true);
-  }, [location]);
+  }, []);
 
   return (
     <motion.div
@@ -25,7 +24,9 @@ const NotFoundPage = (props) => {
         La pagina che stai cercando potrebbe essere stata rimossa o non essere
         disponibile al momento.
       </p>
-      <Link to="/" style={{ textDecoration: "none" }}>Torna alla Homepage</Link>
+      <Link to="/" style={{ textDecoration: "none" }}>
+        Torna alla Homepage
+      </Link>
     </motion.div>
   );
 };

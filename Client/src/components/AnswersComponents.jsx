@@ -2,8 +2,8 @@
 import "bootstrap-icons/font/bootstrap-icons.css";
 import { Col, Row, Table, Button, Alert } from "react-bootstrap";
 import dayjs from "dayjs";
-import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { AddAnswerForm, EditAnswerForm } from "./Forms";
 import AuthContext from "./context/AuthContext";
 
@@ -12,6 +12,17 @@ function Answers(props) {
   const [showEditAnswerForm, setShowEditAnswerForm] = useState(false);
   const [obj, setObj] = useState("");
   const { isLoggedIn } = useContext(AuthContext);
+
+  let { id } = useParams();
+  id = parseInt(id);
+
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (props.reloadPage) {
+      const question = { id: id };
+      props.getQuestionById(question, navigate);
+    }
+  }, []);
 
   let variant = null;
   switch (props.successMsg.variant || props.errorMsg.variant) {
@@ -39,12 +50,12 @@ function Answers(props) {
       {props.answers.length === 0 && !isLoggedIn ? (
         <Row>
           <Col as="p">
-            <italic>
+            <em>
               No answer present.{" "}
               <Link to="/login" style={{ textDecoration: "none" }}>
                 Be the first.
               </Link>
-            </italic>
+            </em>
           </Col>
         </Row>
       ) : (
@@ -138,8 +149,8 @@ function AnswersTable(props) {
       <tbody>
         {props.answers.map((answer) => (
           <AnswerRow
-            answer={answer}
             key={answer.id}
+            answer={answer}
             addScore={props.addScore}
             deleteAnswer={props.deleteAnswer}
             setShowAddAnswerForm={props.setShowAddAnswerForm}

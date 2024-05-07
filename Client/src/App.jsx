@@ -21,6 +21,7 @@ function App() {
   const [answers, setAnswers] = useState([]);
   const [scoreState, setScoreState] = useState("desc");
   const [loading, setLoading] = useState(true);
+  const [dirtyQuestions, setDirtyQuestions] = useState(true);
   const [dirty, setDirty] = useState(false);
   const [successMsg, setSuccessMsg] = useState("");
   const [successMsgTimeOutID, setSuccessMsgTimeOutID] = useState(null);
@@ -28,6 +29,7 @@ function App() {
   const [navbarLoginState, setNavbarLoginState] = useState(true);
   const [user, setUser] = useState("");
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [reloadPage, setReloadPage] = useState(true);
 
   const handleError = (error) => {
     console.log(`**Errore catturato: ${error}**`);
@@ -50,13 +52,16 @@ function App() {
   }, []);
 
   useEffect(() => {
-    API.getQuestions()
-      .then((questions) => {
-        setQuestions(questions);
-        setLoading(false);
-      })
-      .catch((error) => handleError(error));
-  }, [dirty]);
+    if (dirtyQuestions) {
+      API.getQuestions()
+        .then((questions) => {
+          setQuestions(questions);
+          setLoading(false);
+          setDirtyQuestions(false);
+        })
+        .catch((error) => handleError(error));
+    }
+  }, [dirtyQuestions]);
 
   const getQuestionById = (question, navigate = null) => {
     API.getQuestionById(question.id)
@@ -64,9 +69,15 @@ function App() {
         setQuestion(question);
         setLoading(true);
         setDirty(true);
+        setReloadPage(false);
         navigate(`/questions/${question.id}/answers`);
       })
-      .catch((error) => handleError(error));
+      .catch((error) => {
+        if (error === "Question non trovata nel database.") {
+          return navigate("/notfoundpage");
+        }
+        handleError(error);
+      });
   };
 
   useEffect(() => {
@@ -165,6 +176,34 @@ function App() {
       .catch((error) => handleError(error));
   };
 
+  const deleteQuestion = (id) => {
+    setQuestions((oldQuestions) =>
+      oldQuestions.map((question) => {
+        if (question.id === id) {
+          return { ...question, status: "deleted" };
+        } else {
+          return question;
+        }
+      })
+    );
+    if (successMsg) {
+      // Se è attivo un banner SuccessMsg allora svuoto il banner ed elimino il suo timeout. Poi ne avvio un altro con le istruzioni successive.
+      setSuccessMsg(""); // Svuoto il banner
+      clearTimeout(successMsgTimeOutID); // Elimino il timeout
+    }
+    API.deleteQuestion(id)
+      .then(() => {
+        setSuccessMsg({
+          message_questionsComponent: "Domanda eliminata correttamente!",
+          variant: "deleted",
+        });
+        const id = setTimeout(() => setSuccessMsg(""), 4000);
+        setSuccessMsgTimeOutID(id);
+        setDirtyQuestions(true);
+      })
+      .catch((error) => handleError(error));
+  };
+
   const addScore = (id) => {
     setAnswers((oldAnswers) =>
       oldAnswers.map((answer) => {
@@ -220,6 +259,7 @@ function App() {
                   <QuestionsTitle questions={questions} />
                   <QuestionsComponent
                     questions={questions}
+                    deleteQuestion={deleteQuestion}
                     getQuestionById={getQuestionById}
                     successMsg={successMsg}
                     successMsgTimeOutID={successMsgTimeOutID}
@@ -254,6 +294,8 @@ function App() {
                         setSuccessMsg={setSuccessMsg}
                         errorMsg={errorMsg}
                         setErrorMsg={setErrorMsg}
+                        getQuestionById={getQuestionById}
+                        reloadPage={reloadPage}
                       />
                     </Container>
                     <MyFooter />

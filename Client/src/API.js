@@ -16,6 +16,7 @@ async function getQuestions() {
       text: e.text,
       email: e.email,
       date: dayjs(e.date),
+      user_id: e.user_id,
     }));
   } else {
     throw questions.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
@@ -116,6 +117,18 @@ async function deleteAnswer(id) {
   }
 }
 
+async function deleteQuestion(id) {
+  // call  /api/answers/:id
+  const response = await fetch(URL + `/questions/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+  if (!response.ok) {
+    const errore = await response.json();
+    throw errore.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
+  }
+}
+
 async function login(credentials) {
   // call  /api/login
   const response = await fetch(URL + `/login`, {
@@ -170,6 +183,7 @@ const API = {
   editAnswer,
   voteAnswer,
   deleteAnswer,
+  deleteQuestion,
   login,
   logout,
   getCurrentUser,

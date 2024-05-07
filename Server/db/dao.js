@@ -19,6 +19,7 @@ exports.getQuestions = () => {
         text: e.text,
         email: e.email,
         date: dayjs(e.date),
+        user_id: e.user_id,
       }));
       resolve(questions);
     });
@@ -148,6 +149,20 @@ exports.deleteAnswer = (answer_id, user_id) => {
   return new Promise((resolve, reject) => {
     const sql = "DELETE FROM answers WHERE id = ? AND user_id = ?";
     db.run(sql, [answer_id, user_id], (err) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      resolve(true);
+    });
+  });
+};
+
+// delete an existing question
+exports.deleteQuestion = (question_id, user_id) => {
+  return new Promise((resolve, reject) => {
+    const sql = "DELETE FROM questions WHERE id = ? AND user_id = ?";
+    db.run(sql, [question_id, user_id], (err) => {
       if (err) {
         reject(err);
         return;
