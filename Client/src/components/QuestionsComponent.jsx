@@ -3,11 +3,13 @@
 /* eslint-disable no-unused-vars */
 import { Alert, Col, Row, Table, Button } from "react-bootstrap";
 import dayjs from "dayjs";
-import { useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+// import { QuestionForm } from "./QuestionForm";
 import AuthContext from "./context/AuthContext";
 
 function Questions(props) {
+  const [mode, setMode] = useState("view");
   const { setNavbarLoginState } = useContext(AuthContext);
 
   useEffect(() => {
@@ -57,8 +59,13 @@ function Questions(props) {
       </Row>
       <Row>
         <Col lg={10} className="mx-auto">
-          {/* <AddAnswerForm />
-          <EditAnswerForm /> */}
+          {/* {mode === "view" && (
+            <Button variant="primary" onClick={setMode("add")}>
+              Add Answer
+            </Button>
+          )}
+          {mode === "add" && <QuestionForm />}
+          {mode === "edit" && <QuestionForm />} */}
         </Col>
       </Row>
     </>

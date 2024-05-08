@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import AuthContext from "./context/AuthContext";
 
 function AddAnswerForm(props) {
-  const [date, setDate] = useState("");
+  const [date, setDate] = useState(dayjs().format("YYYY-MM-DD")); // setto la data al giorno corrente con dayjs()
   const [text, setText] = useState("");
   const [author, setAuthor] = useState("");
   const [score, setScore] = useState("");
@@ -15,11 +15,10 @@ function AddAnswerForm(props) {
 
   const { isLoggedIn } = useContext(AuthContext);
 
-  /*** solo se voglio permettere all'utente di selezionare la data ***/
-  // const handleDate = (event) => {
-  //   const value = event.target.value;
-  //   setDate(value);
-  // };
+  const handleDate = (event) => {
+    const value = event.target.value;
+    setDate(value);
+  };
 
   const handleText = (event) => {
     const value = event.target.value;
@@ -62,7 +61,7 @@ function AddAnswerForm(props) {
   };
 
   const clearForm = () => {
-    setDate("");
+    // setDate("");
     setText("");
     setAuthor("");
     setScore("");
@@ -88,8 +87,7 @@ function AddAnswerForm(props) {
         <Form onSubmit={handleSubmitAddAnswer}>
           <Form.Group className="mb-3">
             <Form.Label>Date</Form.Label>
-            {/* <Form.Control type="date" value={date} onChange={handleDate} /> // solo se voglio permettere all'utente di selezionare la data */}
-            <Form.Control type="date" value={date} disabled />
+            <Form.Control type="date" value={date} onChange={handleDate} disabled />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Text</Form.Label>
@@ -128,7 +126,6 @@ function AddAnswerForm(props) {
             onClick={() => {
               props.setShowAddAnswerForm(true);
               props.setShowEditAnswerForm(false);
-              setDate(dayjs().format("YYYY-MM-DD")); // setto la data al giorno corrente con dayjs()
             }}
           >
             Add Answer

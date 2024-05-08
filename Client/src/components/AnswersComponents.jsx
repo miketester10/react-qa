@@ -4,7 +4,7 @@ import { Col, Row, Table, Button, Alert } from "react-bootstrap";
 import dayjs from "dayjs";
 import { useContext, useEffect, useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
-import { AddAnswerForm, EditAnswerForm } from "./Forms";
+import { AddAnswerForm, EditAnswerForm } from "./AnswerForm";
 import AuthContext from "./context/AuthContext";
 
 function Answers(props) {
