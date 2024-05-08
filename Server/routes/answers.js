@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const dao = require("../db/dao");
 const { check, validationResult } = require("express-validator"); // validation middleware
 const isLoggedIn = require("../middleware/isLoggedIn");
-const dao = require("../db/dao");
 const dayjs = require("dayjs");
 
 /*** APIs ***/

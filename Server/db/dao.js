@@ -103,6 +103,25 @@ exports.createAnswer = (answer, user_id) => {
   });
 };
 
+// add a new question
+exports.createQuestion = (question, user_id) => {
+  return new Promise((resolve, reject) => {
+    const sql =
+      "INSERT INTO questions (text, email, date, user_id) VALUES (?, ?, ?, ?)";
+    db.run(
+      sql,
+      [question.text, question.email, question.date, user_id],
+      (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(true);
+      }
+    );
+  });
+};
+
 // edit an existing answer
 exports.editAnswer = (answer, user_id) => {
   return new Promise((resolve, reject) => {
@@ -161,13 +180,21 @@ exports.deleteAnswer = (answer_id, user_id) => {
 // delete an existing question
 exports.deleteQuestion = (question_id, user_id) => {
   return new Promise((resolve, reject) => {
-    const sql = "DELETE FROM questions WHERE id = ? AND user_id = ?";
-    db.run(sql, [question_id, user_id], (err) => {
+    // Esegui PRAGMA foreign_keys = ON  ( Abilita il supporto delle chiavi esterne (senza di questo non vengono abilitate le FK e di conseguenza non riuscivo a sfruttare l'ON DELETE CASCADE settato sulle FK della tabella answers)
+    db.run("PRAGMA foreign_keys = ON", function (err) {
       if (err) {
         reject(err);
         return;
       }
-      resolve(true);
+
+      const sql = "DELETE FROM questions WHERE id = ? AND user_id = ?";
+      db.run(sql, [question_id, user_id], (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(true);
+      });
     });
   });
 };

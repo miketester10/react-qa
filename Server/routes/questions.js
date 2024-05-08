@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const dao = require("../db/dao");
+const { check, validationResult } = require("express-validator"); // validation middleware
 const isLoggedIn = require("../middleware/isLoggedIn");
 const dayjs = require("dayjs");
 
@@ -46,6 +47,31 @@ router.get("/api/questions/:id/answers/", async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// API per aggiungere una nuova domanda
+router.post(
+  "/api/questions",
+  isLoggedIn,
+  [
+    check("date").isISO8601(),
+    check("text").isLength({ min: 2 }),
+    check("email").isEmail(),
+  ],
+  async (req, res) => {
+    let error = validationResult(req);
+    if (!error.isEmpty()) {
+      error = { message: JSON.stringify(error.array()) };
+      return res.status(422).json({ error: error.message });
+    }
+    try {
+      const question = req.body;
+      const result = await dao.createQuestion(question, req.user.id);
+      setTimeout(() => res.json({ success: result }), 1000); // il setTimeout l'ho messo solo per simulare il tempo di risposta (va tolto in produzione)
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
 
 // API per eliminare una domanda
 router.delete("/api/questions/:id", isLoggedIn, async (req, res) => {

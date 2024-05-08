@@ -65,7 +65,23 @@ async function addAnswer(answer) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ ...answer, date: answer.date }),
+    body: JSON.stringify({...answer}),
+    credentials: "include",
+  });
+  if (!response.ok) {
+    const errore = await response.json();
+    throw errore.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
+  }
+}
+
+async function addQuestion(question) {
+  // call  /api/questions
+  const response = await fetch(URL + `/questions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({...question}),
     credentials: "include",
   });
   if (!response.ok) {
@@ -180,6 +196,7 @@ const API = {
   getQuestionById,
   getAnswersByQuestionId,
   addAnswer,
+  addQuestion,
   editAnswer,
   voteAnswer,
   deleteAnswer,

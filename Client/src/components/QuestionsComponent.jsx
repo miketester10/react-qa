@@ -5,7 +5,7 @@ import { Alert, Col, Row, Table, Button } from "react-bootstrap";
 import dayjs from "dayjs";
 import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-// import { QuestionForm } from "./QuestionForm";
+import { QuestionForm } from "./QuestionForm";
 import AuthContext from "./context/AuthContext";
 
 function Questions(props) {
@@ -59,13 +59,24 @@ function Questions(props) {
       </Row>
       <Row>
         <Col lg={10} className="mx-auto">
-          {/* {mode === "view" && (
-            <Button variant="primary" onClick={setMode("add")}>
-              Add Answer
+          {mode === "view" && (
+            <Button variant="primary" onClick={() => setMode("add")}>
+              Add Question
             </Button>
           )}
-          {mode === "add" && <QuestionForm />}
-          {mode === "edit" && <QuestionForm />} */}
+          {mode === "add" && (
+            <QuestionForm
+              addQuestion={(newQuestion) => {
+                props.addQuestion(newQuestion);
+                setMode("view");
+              }}
+              mode={mode}
+              close={() => setMode("view")}
+            />
+          )}
+          {mode === "edit" && (
+            <QuestionForm mode={mode} close={() => setMode("view")} />
+          )}
         </Col>
       </Row>
     </>

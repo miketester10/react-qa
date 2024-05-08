@@ -38,6 +38,23 @@ function App() {
     setDirty(true);
   };
 
+  const getQuestionById = (question, navigate = null) => {
+    API.getQuestionById(question.id)
+      .then((question) => {
+        setQuestion(question);
+        setLoading(true);
+        setDirty(true);
+        setReloadPage(false);
+        navigate(`/questions/${question.id}/answers`);
+      })
+      .catch((error) => {
+        if (error === "Question non trovata nel database.") {
+          return navigate("/notfoundpage");
+        }
+        handleError(error);
+      });
+  };
+
   useEffect(() => {
     // Controllo se l'utente è loggato ogni volta che si carica la pagina
     API.getCurrentUser().then((user) => {
@@ -59,23 +76,6 @@ function App() {
       })
       .catch((error) => handleError(error));
   }, [dirty]);
-
-  const getQuestionById = (question, navigate = null) => {
-    API.getQuestionById(question.id)
-      .then((question) => {
-        setQuestion(question);
-        setLoading(true);
-        setDirty(true);
-        setReloadPage(false);
-        navigate(`/questions/${question.id}/answers`);
-      })
-      .catch((error) => {
-        if (error === "Question non trovata nel database.") {
-          return navigate("/notfoundpage");
-        }
-        handleError(error);
-      });
-  };
 
   useEffect(() => {
     if (dirty) {
@@ -116,6 +116,32 @@ function App() {
       })
       .catch((error) => handleError(error));
   };
+
+  const addQuestion = (newQuestion) => {
+    newQuestion.status = "added";
+    setQuestions((oldAnswers) => {
+      const temporary_key =
+        Math.max(...oldAnswers.map((elemento) => elemento.id)) + 1; // Create a new temporary id for the key in map function in <Answers Row/>, waiting for a truly unique id that can only be supplied by the server. This temporary id will be replaced when the server will provide its id.
+        newQuestion.id = temporary_key;
+      return [...oldAnswers, newQuestion];
+    });
+    if (successMsg) {
+      // Se è attivo un banner SuccessMsg allora svuoto il banner ed elimino il suo timeout. Poi ne avvio un altro con le istruzioni successive.
+      setSuccessMsg(""); // Svuoto il banner
+      clearTimeout(successMsgTimeOutID); // Elimino il timeout
+    }
+    API.addQuestion(newQuestion)
+      .then(() => {
+        setSuccessMsg({
+          message_questionsComponent: "Domanda aggiunta correttamente!",
+          variant: "added",
+        });
+        const id = setTimeout(() => setSuccessMsg(""), 4000);
+        setSuccessMsgTimeOutID(id);
+        setDirty(true);
+      })
+      .catch((error) => handleError(error));
+  }
 
   const editAnswer = (editedAnswer) => {
     editedAnswer.status = "updated";
@@ -197,6 +223,7 @@ function App() {
         });
         const id = setTimeout(() => setSuccessMsg(""), 4000);
         setSuccessMsgTimeOutID(id);
+        setQuestion("");
         setDirty(true);
       })
       .catch((error) => handleError(error));
@@ -257,6 +284,7 @@ function App() {
                   <QuestionsTitle questions={questions} />
                   <QuestionsComponent
                     questions={questions}
+                    addQuestion={addQuestion}
                     deleteQuestion={deleteQuestion}
                     getQuestionById={getQuestionById}
                     successMsg={successMsg}
