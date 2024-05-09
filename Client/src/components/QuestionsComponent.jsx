@@ -10,11 +10,18 @@ import AuthContext from "./context/AuthContext";
 
 function Questions(props) {
   const [mode, setMode] = useState("view");
+  const [editableQuestion, setEditableQuestion] = useState("");
+  const { isLoggedIn } = useContext(AuthContext);
   const { setNavbarLoginState } = useContext(AuthContext);
 
   useEffect(() => {
     setNavbarLoginState(true);
   }, []);
+
+  const handleEdit = (question) => {
+    setEditableQuestion(question);
+    setMode("edit");
+  };
 
   let variant = null;
   switch (props.successMsg.variant || props.errorMsg.variant) {
@@ -53,17 +60,18 @@ function Questions(props) {
           <QuestionsTable
             questions={props.questions}
             getQuestionById={props.getQuestionById}
+            handleEdit={handleEdit}
             deleteQuestion={props.deleteQuestion}
           />
         </Col>
       </Row>
       <Row>
         <Col lg={10} className="mx-auto">
-          {mode === "view" && (
+          {mode === "view" && isLoggedIn ? (
             <Button variant="primary" onClick={() => setMode("add")}>
               Add Question
             </Button>
-          )}
+          ) : null}
           {mode === "add" && (
             <QuestionForm
               addQuestion={(newQuestion) => {
@@ -75,7 +83,16 @@ function Questions(props) {
             />
           )}
           {mode === "edit" && (
-            <QuestionForm mode={mode} close={() => setMode("view")} />
+            <QuestionForm
+              key={editableQuestion.id} // la key serve per aggiornare i campi del form ogni volta che premo il bottone per modifica la domanda
+              editableQuestion={editableQuestion}
+              editQuestion={(editedQuestion) => {
+                props.editQuestion(editedQuestion);
+                setMode("view");
+              }}
+              mode={mode}
+              close={() => setMode("view")}
+            />
           )}
         </Col>
       </Row>
@@ -104,11 +121,8 @@ function QuestionsTable(props) {
             question={question}
             questions={props.questions}
             getQuestionById={props.getQuestionById}
-            // addScore={props.addScore}
+            handleEdit={props.handleEdit}
             deleteQuestion={props.deleteQuestion}
-            // setShowAddAnswerForm={props.setShowAddAnswerForm}
-            // setShowEditAnswerForm={props.setShowEditAnswerForm}
-            // setObj={props.setObj}
           />
         ))}
       </tbody>
@@ -144,11 +158,8 @@ function QuestionRow(props) {
       {isLoggedIn && props.questions.some((q) => q.user_id === user.id) ? (
         <QuestionActions
           question={props.question}
-          // addScore={props.addScore}
-          // setShowAddAnswerForm={props.setShowAddAnswerForm}
-          // setShowEditAnswerForm={props.setShowEditAnswerForm}
+          handleEdit={props.handleEdit}
           deleteQuestion={props.deleteQuestion}
-          // setObj={props.setObj}
         />
       ) : null}
     </tr>
@@ -209,7 +220,11 @@ function QuestionActions(props) {
     >
       {user.id === props.question.user_id && (
         <>
-          <Button variant="primary" className="mx-1">
+          <Button
+            variant="primary"
+            className="mx-1"
+            onClick={() => props.handleEdit(props.question)}
+          >
             <i className="bi bi-pencil-square"></i>
           </Button>
           <Button

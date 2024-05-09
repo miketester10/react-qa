@@ -87,7 +87,12 @@ function AddAnswerForm(props) {
         <Form onSubmit={handleSubmitAddAnswer}>
           <Form.Group className="mb-3">
             <Form.Label>Date</Form.Label>
-            <Form.Control type="date" value={date} onChange={handleDate} disabled />
+            <Form.Control
+              type="date"
+              value={date}
+              onChange={handleDate}
+              disabled
+            />
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Text</Form.Label>
@@ -154,11 +159,10 @@ function EditAnswerForm(props) {
     setScore(props.obj.score);
   }, [props.obj]);
 
-  /*** solo se voglio permettere all'utente di selezionare la data ***/
-  // const handleDate = (event) => {
-  //   const value = event.target.value;
-  //   setDate(value);
-  // };
+  const handleDate = (event) => {
+    const value = event.target.value;
+    setDate(value);
+  };
 
   const handleText = (event) => {
     const value = event.target.value;
@@ -220,8 +224,7 @@ function EditAnswerForm(props) {
         <Form onSubmit={handleSubmitEditAnswer}>
           <Form.Group className="mb-3">
             <Form.Label>Date</Form.Label>
-            {/* <Form.Control type="date" value={date} onChange={handleDate} /> // solo se voglio permettere all'utente di selezionare la data */}
-            <Form.Control type="date" value={date} disabled />
+            <Form.Control type="date" value={date} onChange={handleDate} disabled /> 
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Text</Form.Label>

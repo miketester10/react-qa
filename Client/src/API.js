@@ -65,7 +65,7 @@ async function addAnswer(answer) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({...answer}),
+    body: JSON.stringify(answer),
     credentials: "include",
   });
   if (!response.ok) {
@@ -81,7 +81,7 @@ async function addQuestion(question) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({...question}),
+    body: JSON.stringify(question),
     credentials: "include",
   });
   if (!response.ok) {
@@ -97,7 +97,23 @@ async function editAnswer(answer) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ ...answer, date: answer.date }),
+    body: JSON.stringify(answer),
+    credentials: "include",
+  });
+  if (!response.ok) {
+    const errore = await response.json();
+    throw errore.error; // mi aspetto che sia un oggetto json fornito dal server che contiene l'errore
+  }
+}
+
+async function editQuestion(question) {
+  // call  /api/questions/:id
+  const response = await fetch(URL + `/questions/${question.id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(question),
     credentials: "include",
   });
   if (!response.ok) {
@@ -197,6 +213,7 @@ const API = {
   getAnswersByQuestionId,
   addAnswer,
   addQuestion,
+  editQuestion,
   editAnswer,
   voteAnswer,
   deleteAnswer,

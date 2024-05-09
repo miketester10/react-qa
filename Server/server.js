@@ -9,6 +9,7 @@ const login_router = require("./routes/login");
 const logout_router = require("./routes/logout");
 const questions_router = require("./routes/questions");
 const answers_router = require("./routes/answers");
+require("dotenv").config();
 
 /*** Inizializzo Express ***/
 const app = express();

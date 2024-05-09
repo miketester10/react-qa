@@ -148,6 +148,25 @@ exports.editAnswer = (answer, user_id) => {
   });
 };
 
+// edit an existing question
+exports.editQuestion = (question, user_id) => {
+  return new Promise((resolve, reject) => {
+    const sql =
+      "UPDATE questions SET text = ?, email = ?, date = ? WHERE id = ? AND user_id = ?";
+    db.run(
+      sql,
+      [question.text, question.email, question.date, question.id, user_id],
+      (err) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(true);
+      }
+    );
+  });
+};
+
 // vote an existing answer
 exports.voteAnswer = (answer_id, vote) => {
   return new Promise((resolve, reject) => {

@@ -6,9 +6,17 @@ import dayjs from "dayjs";
 import AuthContext from "./context/AuthContext";
 
 function QuestionForm(props) {
-  const [date, setDate] = useState(dayjs().format("YYYY-MM-DD")); // setto la data al giorno corrente con dayjs()
-  const [text, setText] = useState("");
-  const [author, setAuthor] = useState("");
+  const [date, setDate] = useState(
+    props.editableQuestion
+      ? props.editableQuestion.date.format("YYYY-MM-DD")
+      : dayjs().format("YYYY-MM-DD")
+  ); // setto la data al giorno corrente con dayjs()
+  const [text, setText] = useState(
+    props.editableQuestion ? props.editableQuestion.text : ""
+  );
+  const [author, setAuthor] = useState(
+    props.editableQuestion ? props.editableQuestion.email : ""
+  );
   const [errorMsg, setErrorMsg] = useState("");
   const [timeOutID, setTimeOutID] = useState(null);
 
@@ -43,12 +51,18 @@ function QuestionForm(props) {
       setTimeOutID(idTimeoutErrorMsg);
       return;
     }
-    const newQuestion = {
+
+    const question = {
       text: text,
       email: author,
-      date: dayjs(),
+      date: props.editableQuestion ? props.editableQuestion.date : dayjs(),
     };
-    props.addQuestion(newQuestion);
+
+    if (props.mode === "add") {
+      props.addQuestion(question);
+    } else {
+      props.editQuestion({ id: props.editableQuestion.id, ...question });
+    }
     clearForm();
   };
 
@@ -91,7 +105,7 @@ function QuestionForm(props) {
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Author</Form.Label>
-            <Form.Control type="text" value={author} onChange={handleAuthor} />
+            <Form.Control type="email" value={author} onChange={handleAuthor} />
           </Form.Group>
           {props.mode === "add" && (
             <Button variant="primary" type="submit">

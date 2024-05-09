@@ -3,7 +3,6 @@ const LocalStrategy = require("passport-local").Strategy;
 const session = require("express-session");
 const FileStore = require("session-file-store")(session);
 const user_dao = require("../db/user_dao");
-require("dotenv").config();
 
 /*** Set up Passport ***/
 passport.use(

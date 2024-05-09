@@ -73,6 +73,31 @@ router.post(
   }
 );
 
+// API per modificare una domanda
+router.put(
+  "/api/questions/:id",
+  isLoggedIn,
+  [
+    check("date").isISO8601(),
+    check("text").isLength({ min: 2 }),
+    check("email").isEmail(),
+  ],
+  async (req, res) => {
+    let error = validationResult(req);
+    if (!error.isEmpty()) {
+      error = { message: JSON.stringify(error.array()) };
+      return res.status(422).json({ error: error.message });
+    }
+    try {
+      const question = req.body;
+      const result = await dao.editQuestion(question, req.user.id);
+      setTimeout(() => res.json({ success: result }), 1000); // il setTimeout l'ho messo solo per simulare il tempo di risposta (va tolto in produzione)
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
+
 // API per eliminare una domanda
 router.delete("/api/questions/:id", isLoggedIn, async (req, res) => {
   try {

@@ -79,7 +79,9 @@ function App() {
 
   useEffect(() => {
     if (dirty) {
-      if (question == "") {return;}
+      if (question == "") {
+        return;
+      }
       API.getAnswersByQuestionId(question.id)
         .then((answers) => {
           setAnswers(answers);
@@ -122,7 +124,7 @@ function App() {
     setQuestions((oldAnswers) => {
       const temporary_key =
         Math.max(...oldAnswers.map((elemento) => elemento.id)) + 1; // Create a new temporary id for the key in map function in <Answers Row/>, waiting for a truly unique id that can only be supplied by the server. This temporary id will be replaced when the server will provide its id.
-        newQuestion.id = temporary_key;
+      newQuestion.id = temporary_key;
       return [...oldAnswers, newQuestion];
     });
     if (successMsg) {
@@ -141,7 +143,7 @@ function App() {
         setDirty(true);
       })
       .catch((error) => handleError(error));
-  }
+  };
 
   const editAnswer = (editedAnswer) => {
     editedAnswer.status = "updated";
@@ -163,6 +165,35 @@ function App() {
       .then(() => {
         setSuccessMsg({
           message_answersComponent: "Risposta aggiornata correttamente!",
+          variant: "updated",
+        });
+        const id = setTimeout(() => setSuccessMsg(""), 4000);
+        setSuccessMsgTimeOutID(id);
+        setDirty(true);
+      })
+      .catch((error) => handleError(error));
+  };
+
+  const editQuestion = (editedQuestion) => {
+    editedQuestion.status = "updated";
+    setQuestions((oldQuestion) =>
+      oldQuestion.map((question) => {
+        if (question.id === editedQuestion.id) {
+          return editedQuestion;
+        } else {
+          return question;
+        }
+      })
+    );
+    if (successMsg) {
+      // Se è attivo un banner SuccessMsg allora svuoto il banner ed elimino il suo timeout. Poi ne avvio un altro con le istruzioni successive.
+      setSuccessMsg(""); // Svuoto il banner
+      clearTimeout(successMsgTimeOutID); // Elimino il timeout
+    }
+    API.editQuestion(editedQuestion)
+      .then(() => {
+        setSuccessMsg({
+          message_questionsComponent: "Domanda aggiornata correttamente!",
           variant: "updated",
         });
         const id = setTimeout(() => setSuccessMsg(""), 4000);
@@ -285,6 +316,7 @@ function App() {
                   <QuestionsComponent
                     questions={questions}
                     addQuestion={addQuestion}
+                    editQuestion={editQuestion}
                     deleteQuestion={deleteQuestion}
                     getQuestionById={getQuestionById}
                     successMsg={successMsg}
@@ -342,7 +374,7 @@ function App() {
             }
           />
           <Route
-            path="/*"
+            path="*"
             element={
               <NotFoundPage
                 setSuccessMsg={setSuccessMsg}
