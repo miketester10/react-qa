@@ -330,7 +330,7 @@ function App() {
             }
           />
           <Route
-            path="/questions/:id/answers"
+            path="/questions/:questionId/answers"
             element={
               <>
                 {loading ? (

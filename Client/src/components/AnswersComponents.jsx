@@ -13,13 +13,12 @@ function Answers(props) {
   const [obj, setObj] = useState("");
   const { isLoggedIn } = useContext(AuthContext);
 
-  let { id } = useParams();
-  id = parseInt(id);
-
+  const { questionId } = useParams();
+ 
   const navigate = useNavigate();
   useEffect(() => {
     if (props.reloadPage) {
-      const question = { id: id };
+      const question = { id: questionId };
       props.getQuestionById(question, navigate);
     }
   }, []);
